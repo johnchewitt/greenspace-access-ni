@@ -5,7 +5,7 @@ const { chromium } = require("playwright");
   const p = await b.newPage({ viewport: { width: 1600, height: 950 } });
   const errs = [];
   p.on("pageerror", (e) => errs.push(e.message));
-  await p.goto("http://localhost:4174/", { waitUntil: "domcontentloaded" });
+  await p.goto("http://localhost:4175/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(9000);
 
   const order = await p.evaluate(() => {

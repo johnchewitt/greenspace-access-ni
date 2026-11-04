@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
 import Point from "@arcgis/core/geometry/Point";
+import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import type { MapController } from "./MapController";
 
 /**
@@ -17,7 +18,12 @@ export function CouncilLabels({ controller, visible }: { controller: MapControll
       const view = controller.view;
       if (!view || !view.ready) return;
       controller.lgdLayer
-        .queryFeatures({ where: "1=1", returnGeometry: true, outFields: ["code", "name"] })
+        .queryFeatures({
+          where: "1=1",
+          returnGeometry: true,
+          outFields: ["code", "name"],
+          outSpatialReference: SpatialReference.WebMercator,
+        })
         .then((fs) => {
           if (disposed) return;
           setAnchors(

@@ -6,6 +6,8 @@ import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Graphic from "@arcgis/core/Graphic";
 import Extent from "@arcgis/core/geometry/Extent";
+import SpatialReference from "@arcgis/core/geometry/SpatialReference";
+import { geographicToWebMercator } from "@arcgis/core/geometry/support/webMercatorUtils";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
 import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
@@ -31,13 +33,21 @@ import type { LayerId, ServiceState } from "../state/AppState";
 // SDK assets ship with the app — no runtime dependency on js.arcgis.com.
 esriConfig.assetsPath = `${import.meta.env.BASE_URL}arcgis-assets`;
 
-export const NI_EXTENT = new Extent({
+const NI_EXTENT_GEOGRAPHIC = new Extent({
   xmin: -8.4,
   ymin: 53.95,
   xmax: -5.2,
   ymax: 55.45,
   spatialReference: { wkid: 4326 },
 });
+
+/**
+ * All views run in Web Mercator — the projection of the OSM basemap and of
+ * Outscape's existing Greenspace NI Map, and locally shape-true at NI's
+ * latitude. Without this, a basemap-less view inherits WGS84 from the GeoJSON
+ * boundaries and renders equirectangular (visibly stretched east–west).
+ */
+export const NI_EXTENT = geographicToWebMercator(NI_EXTENT_GEOGRAPHIC) as Extent;
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -147,6 +157,7 @@ export class MapController {
   /** Attach to an <arcgis-map> element's ready view. */
   attach(view: MapView) {
     this.view = view;
+    view.spatialReference = SpatialReference.WebMercator;
     // Draw order (bottom → top): index choropleth first, then the Outscape
     // context layers ABOVE it so they stay visible over the opaque fills,
     // selection outline topmost. (Basemap, when enabled, is unshifted below all.)
@@ -170,7 +181,12 @@ export class MapController {
 
     // cache geometries for selection/zoom + register interactions
     this.lgdLayer
-      .queryFeatures({ where: "1=1", returnGeometry: true, outFields: ["code"] })
+      .queryFeatures({
+        where: "1=1",
+        returnGeometry: true,
+        outFields: ["code"],
+        outSpatialReference: SpatialReference.WebMercator,
+      })
       .then((fs) => {
         fs.features.forEach((f) => this.geometriesByCode.set(f.attributes.code, f.geometry!));
       })

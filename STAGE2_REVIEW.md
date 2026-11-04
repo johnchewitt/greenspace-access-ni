@@ -14,6 +14,12 @@ All fixes implemented, tested and deployed; nothing rebuilt, no new runtime depe
 | Low | Code | Dead export (`useExploreData`), unused import | Removed |
 | Doc | Docs | CLAUDE.md said React 18 and claimed a CI data-drift regeneration that can't exist without the source report in the repo | Corrected to React 19; CI contract restated as data-contract test assertions |
 
+### Post-review addendum (same day)
+
+| Severity | Area | Finding | Fix |
+|---|---|---|---|
+| **High (cartography)** | Projection | With no basemap, the view inherited WGS84 from the GeoJSON boundaries and rendered equirectangular — NI visibly stretched east–west (client-reported) | Both views now explicitly run in **Web Mercator** (the projection of the OSM basemap and of the existing Greenspace NI Map; locally shape-true at NI's latitude). Boundary/label queries pinned to the view SR. Verified: view wkid 102100, correct shape, selection/labels/sync regressions clean. Literal Irish Grid was considered and rejected because the vector-tile basemap can only render in Mercator |
+
 ## UX/UI improvements implemented
 
 - **Hover tooltip on the choropleth** (council name + current metric value + "click for the full profile") — follows the cursor, glass-styled, `role="tooltip"`.
