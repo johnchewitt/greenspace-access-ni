@@ -28,7 +28,7 @@ import {
   type RemoteLayerConfig,
 } from "../config/services";
 import { palette } from "../config/branding";
-import type { LayerId, ServiceState } from "../state/AppState";
+import type { BasemapStyle, LayerId, ServiceState } from "../state/AppState";
 
 // SDK assets ship with the app — no runtime dependency on js.arcgis.com.
 esriConfig.assetsPath = `${import.meta.env.BASE_URL}arcgis-assets`;
@@ -272,18 +272,34 @@ export class MapController {
     layer.visible = on;
   }
 
-  setBasemap(on: boolean) {
+  /**
+   * Backdrop presentation. One verified keyless source (the OSM vector style
+   * used by the existing Greenspace NI Map); "dark" mutes it with layer
+   * effects to sit under the midnight theme. When a backdrop is visible the
+   * choropleth drops to 85% opacity so geography ghosts through (noted in the
+   * legend).
+   */
+  setBasemap(style: BasemapStyle) {
     const view = this.view;
     if (!view) return;
-    if (on && !this.basemapLayer) {
+    if (style !== "none" && !this.basemapLayer) {
       this.basemapLayer = new VectorTileLayer({
         portalItem: { id: osmVectorBasemapItemId },
-        opacity: 0.55,
       });
       watchLayerStatus(this.basemapLayer, "basemap", this.onStatus);
       view.map?.layers.unshift(this.basemapLayer);
     }
-    if (this.basemapLayer) this.basemapLayer.visible = on;
+    if (this.basemapLayer) {
+      this.basemapLayer.visible = style !== "none";
+      if (style === "dark") {
+        this.basemapLayer.effect = "grayscale(0.8) brightness(0.5) contrast(1.05)";
+        this.basemapLayer.opacity = 0.75;
+      } else if (style === "streets") {
+        this.basemapLayer.effect = "saturate(0.85)";
+        this.basemapLayer.opacity = 0.85;
+      }
+    }
+    this.lgdLayer.opacity = style === "none" ? 1 : 0.85;
   }
 
   setChoroplethVisible(on: boolean) {

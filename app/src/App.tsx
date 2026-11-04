@@ -27,7 +27,7 @@ const LAYER_IDS: LayerId[] = ["greenspace", "trails", "accessPoints", "bluespace
 export default function App() {
   const state = useAppState();
   const dispatch = useAppDispatch();
-  const { mode, metric, format, selectedCode, layers, basemapOn, pvpOpened } = state;
+  const { mode, metric, format, selectedCode, layers, basemap, pvpOpened } = state;
 
   // dispatch from useReducer is stable, so both controllers are created once.
   const mainCtl = useMemo(
@@ -72,7 +72,7 @@ export default function App() {
       if (rightCtl.view) {
         window.clearInterval(t);
         rightCtl.useOutlineStyle();
-        rightCtl.setBasemap(true);
+        rightCtl.setBasemap("streets");
         void rightCtl.select(selectedCode, false);
       }
     }, 120);
@@ -90,8 +90,8 @@ export default function App() {
   }, [layers, mode, mainCtl, rightCtl, pvpOpened]);
 
   useEffect(() => {
-    mainCtl.setBasemap(basemapOn && mode !== "pvp");
-  }, [basemapOn, mode, mainCtl]);
+    mainCtl.setBasemap(basemap);
+  }, [basemap, mainCtl]);
 
   useViewSync(mainCtl, rightCtl, mode === "pvp");
 

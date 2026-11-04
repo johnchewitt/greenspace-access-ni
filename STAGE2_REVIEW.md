@@ -26,6 +26,7 @@ All fixes implemented, tested and deployed; nothing rebuilt, no new runtime depe
 - **Context-layer legend**: when Outscape layers are toggled on, the legend gains matching swatches (incl. "zoom in" hints for point layers).
 - **Modals**: Esc closes, close button takes focus on open.
 - **Search**: arrow-key navigation with visible highlight and correct `aria-selected`.
+- **Backdrop selector** (client request): None / Dark / Streets. One verified keyless source (the OSM vector style used by the existing Greenspace NI Map); "Dark" mutes it with SDK layer effects (grayscale + brightness) to sit under the midnight theme, and any active backdrop drops the choropleth to 85% opacity so geography ghosts through (stated in the panel). Defaults to Dark; the provision map keeps full OSM.
 
 ## Test & build status (all executed)
 

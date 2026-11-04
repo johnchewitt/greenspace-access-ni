@@ -28,7 +28,7 @@ const LAYERS: { id: LayerId; label: string }[] = [
 export function LeftPanel() {
   const state = useAppState();
   const dispatch = useAppDispatch();
-  const { metric, format, leftOpen, layers, basemapOn, serviceStatus } = state;
+  const { metric, format, leftOpen, layers, basemap, serviceStatus } = state;
 
   return (
     <>
@@ -96,15 +96,44 @@ export function LeftPanel() {
               </div>
             );
           })}
-          <div className="layer-row">
-            <Switch checked={basemapOn} onChange={(on) => dispatch({ type: "basemap", on })} label="Context basemap" />
-            <span>Context basemap</span>
-            <span className={`status ${serviceStatus.basemap === "error" ? "err" : ""}`}>
-              {serviceStatus.basemap === "error" ? "offline" : ""}
-            </span>
-          </div>
           <p className="legend-note">
             Live from Outscape's Greenspace NI Map services. {outscapeLayers.bluespace.note}.
+          </p>
+        </section>
+
+        <section className="panel-section glass">
+          <h2 className="section-label">
+            Backdrop
+            {serviceStatus.basemap === "error" && (
+              <span style={{ float: "right", font: "600 10px var(--gani-font-ui)", color: "var(--gani-gold)" }}>offline</span>
+            )}
+          </h2>
+          <div className="format-toggle" role="group" aria-label="Map backdrop">
+            {([
+              ["none", "None"],
+              ["dark", "Dark"],
+              ["streets", "Streets"],
+            ] as const).map(([id, label]) => (
+              <button
+                key={id}
+                aria-pressed={basemap === id}
+                onClick={() => dispatch({ type: "basemap", style: id })}
+                title={
+                  id === "none"
+                    ? "Index canvas only"
+                    : id === "dark"
+                      ? "Muted OpenStreetMap backdrop"
+                      : "OpenStreetMap backdrop"
+                }
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="format-hint">
+            {basemap === "none"
+              ? "Pure index canvas — no base mapping."
+              : "OpenStreetMap vector backdrop; index colours sit over it at 85% opacity."}
           </p>
         </section>
 

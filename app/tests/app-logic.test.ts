@@ -5,6 +5,13 @@ import { pickLatestProvision, fmtProvision } from "../src/features/pvp/provision
 import { divRamp, indexBreaks, pctBreaks, seqRamp } from "../src/config/branding";
 
 describe("app state reducer", () => {
+  it("backdrop defaults to the dark muted style and can be switched", () => {
+    expect(initialState.basemap).toBe("dark");
+    const s = reducer(initialState, { type: "basemap", style: "streets" });
+    expect(s.basemap).toBe("streets");
+    expect(reducer(s, { type: "basemap", style: "none" }).basemap).toBe("none");
+  });
+
   it("selecting a theme while in % view moves to index (themes publish indices only)", () => {
     const s = reducer({ ...initialState, format: "pct" }, { type: "metric", metric: "quality" });
     expect(s.metric).toBe("quality");
@@ -22,7 +29,8 @@ describe("app state reducer", () => {
     expect(s.layers.greenspace).toBe(true);
     expect(s.layers.trails).toBe(true);
     expect(s.layers.accessPoints).toBe(true);
-    expect(s.basemapOn).toBe(true);
+    // the index map keeps the user's backdrop choice; provision map manages its own
+    expect(s.basemap).toBe(initialState.basemap);
     const back = reducer(s, { type: "mode", mode: "explore" });
     expect(back.pvpOpened).toBe(true); // second map stays mounted
   });

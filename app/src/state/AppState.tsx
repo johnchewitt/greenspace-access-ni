@@ -11,6 +11,7 @@ import type { FormatId, MetricId } from "../data";
 export type Mode = "explore" | "understand" | "compare" | "pvp";
 
 export type LayerId = "greenspace" | "trails" | "accessPoints" | "bluespace";
+export type BasemapStyle = "none" | "dark" | "streets";
 export type ServiceState = "idle" | "loading" | "ok" | "error";
 
 export interface AppState {
@@ -23,7 +24,7 @@ export interface AppState {
   leftOpen: boolean;
   rightOpen: boolean;
   layers: Record<LayerId, boolean>;
-  basemapOn: boolean;
+  basemap: BasemapStyle;
   serviceStatus: Record<string, ServiceState>;
   infoOpen: boolean;
   methodologyOpen: boolean;
@@ -36,7 +37,7 @@ export type Action =
   | { type: "select"; code: string | null }
   | { type: "panel"; side: "left" | "right"; open: boolean }
   | { type: "layer"; layer: LayerId; on: boolean }
-  | { type: "basemap"; on: boolean }
+  | { type: "basemap"; style: BasemapStyle }
   | { type: "service"; id: string; state: ServiceState }
   | { type: "info"; open: boolean }
   | { type: "methodology"; open: boolean };
@@ -50,7 +51,7 @@ export const initialState: AppState = {
   leftOpen: true,
   rightOpen: true,
   layers: { greenspace: false, trails: false, accessPoints: false, bluespace: false },
-  basemapOn: false,
+  basemap: "dark",
   serviceStatus: {},
   infoOpen: false,
   methodologyOpen: false,
@@ -61,9 +62,10 @@ export function reducer(state: AppState, a: Action): AppState {
     case "mode": {
       const next: AppState = { ...state, mode: a.mode, pvpOpened: state.pvpOpened || a.mode === "pvp" };
       // Entering the signature mode turns the provision evidence on.
+      // (The provision map manages its own basemap; the index map keeps the
+      // user's backdrop choice.)
       if (a.mode === "pvp") {
         next.layers = { ...state.layers, greenspace: true, trails: true, accessPoints: true };
-        next.basemapOn = true;
       }
       return next;
     }
@@ -84,7 +86,7 @@ export function reducer(state: AppState, a: Action): AppState {
     case "layer":
       return { ...state, layers: { ...state.layers, [a.layer]: a.on } };
     case "basemap":
-      return { ...state, basemapOn: a.on };
+      return { ...state, basemap: a.style };
     case "service":
       return { ...state, serviceStatus: { ...state.serviceStatus, [a.id]: a.state } };
     case "info":
