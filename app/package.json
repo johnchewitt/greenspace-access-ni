@@ -2,14 +2,16 @@
   "name": "greenspace-access-ni",
   "private": true,
   "version": "2.0.0",
-  "description": "Greenspace Access NI — Understanding Access, Quality & Wellbeing Across Northern Ireland",
+  "description": "Greenspace Access NI \u2014 Understanding Access, Quality & Wellbeing Across Northern Ireland",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "check": "tsc --noEmit && eslint . && vitest run"
   },
   "dependencies": {
     "@arcgis/core": "5.1.27",
@@ -22,11 +24,15 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "typescript": "~5.7.2",
+    "typescript-eslint": "^8.72.1",
     "vite": "^7.2.7",
     "vite-plugin-static-copy": "^3.0.0",
     "vitest": "^3.0.0"

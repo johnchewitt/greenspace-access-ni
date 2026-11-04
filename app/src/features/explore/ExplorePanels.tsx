@@ -7,7 +7,6 @@ import {
   fmtIndex,
   fmtPct,
   fmtPct1,
-  lgd,
   lgdByCode,
   ni,
   type MetricId,
@@ -246,6 +245,3 @@ export function AreaPanel() {
   );
 }
 
-export function useExploreData() {
-  return { lgd };
-}

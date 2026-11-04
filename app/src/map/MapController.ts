@@ -113,6 +113,14 @@ export class MapController {
   private geometriesByCode = new globalThis.Map<string, Geometry>();
   private hoverCode: string | null = null;
   onSelect: ((code: string | null) => void) | null = null;
+  onHover: ((code: string | null, x: number, y: number) => void) | null = null;
+
+  setOnSelect(cb: ((code: string | null) => void) | null) {
+    this.onSelect = cb;
+  }
+  setOnHover(cb: ((code: string | null, x: number, y: number) => void) | null) {
+    this.onHover = cb;
+  }
   private onStatus: StatusCb;
 
   constructor(onStatus: StatusCb, withChoropleth = true) {
@@ -139,13 +147,16 @@ export class MapController {
   /** Attach to an <arcgis-map> element's ready view. */
   attach(view: MapView) {
     this.view = view;
+    // Draw order (bottom → top): index choropleth first, then the Outscape
+    // context layers ABOVE it so they stay visible over the opaque fills,
+    // selection outline topmost. (Basemap, when enabled, is unshifted below all.)
     view.map = new EsriMap({
       layers: [
+        this.lgdLayer,
         this.remote.greenspace,
         this.remote.trails,
         this.remote.bluespace,
         this.remote.accessPoints,
-        this.lgdLayer,
         this.selectionLayer,
       ],
     });
@@ -188,6 +199,7 @@ export class MapController {
           this.hoverCode = code;
           view.container!.style.cursor = code ? "pointer" : "default";
         }
+        this.onHover?.(code, e.x, e.y);
       });
     });
   }

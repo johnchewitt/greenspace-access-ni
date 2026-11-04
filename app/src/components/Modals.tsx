@@ -1,13 +1,20 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { APP_NAME, APP_SUBTITLE } from "../config/branding";
 import { integrity } from "../data";
 import { useAppDispatch, useAppState } from "../state/AppState";
 
 function Modal({ onClose, children, label }: { onClose: () => void; children: ReactNode; label: string }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
   return (
     <div className="modal-scrim" role="dialog" aria-modal="true" aria-label={label} onClick={onClose}>
       <div className="modal glass-strong" onClick={(e) => e.stopPropagation()}>
-        <button className="icon-btn close" aria-label="Close" onClick={onClose}>
+        <button ref={closeRef} className="icon-btn close" aria-label="Close" onClick={onClose}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
             <path d="M6 6l12 12M18 6 6 18" />
           </svg>

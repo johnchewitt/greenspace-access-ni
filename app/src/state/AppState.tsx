@@ -15,6 +15,8 @@ export type ServiceState = "idle" | "loading" | "ok" | "error";
 
 export interface AppState {
   mode: Mode;
+  /** true once the PvP split has been opened (second map stays mounted after) */
+  pvpOpened: boolean;
   metric: MetricId;
   format: FormatId;
   selectedCode: string | null;
@@ -41,6 +43,7 @@ export type Action =
 
 export const initialState: AppState = {
   mode: "explore",
+  pvpOpened: false,
   metric: "total",
   format: "pct",
   selectedCode: null,
@@ -56,7 +59,7 @@ export const initialState: AppState = {
 export function reducer(state: AppState, a: Action): AppState {
   switch (a.type) {
     case "mode": {
-      const next: AppState = { ...state, mode: a.mode };
+      const next: AppState = { ...state, mode: a.mode, pvpOpened: state.pvpOpened || a.mode === "pvp" };
       // Entering the signature mode turns the provision evidence on.
       if (a.mode === "pvp") {
         next.layers = { ...state.layers, greenspace: true, trails: true, accessPoints: true };

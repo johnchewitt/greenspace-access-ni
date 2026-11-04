@@ -55,10 +55,19 @@ export function UncertaintyNote({ children }: { children?: ReactNode }) {
   );
 }
 
+const CONTEXT_SWATCHES: { id: "greenspace" | "trails" | "accessPoints" | "bluespace"; label: string; style: React.CSSProperties }[] = [
+  { id: "greenspace", label: "Greenspace site", style: { background: "rgba(184,232,131,0.4)", border: "1px solid rgba(184,232,131,0.8)" } },
+  { id: "trails", label: "Off-road trail", style: { background: "transparent", borderTop: "2.5px solid rgba(67,220,193,0.9)", height: 0, marginTop: 5 } },
+  { id: "accessPoints", label: "Access point (zoom in)", style: { background: "#E2B76B", borderRadius: "50%", width: 9, height: 9, marginInline: 6 } },
+  { id: "bluespace", label: "Bluespace access (zoom in)", style: { background: "#7FAEF5", width: 9, height: 9, rotate: "45deg", marginInline: 6 } },
+];
+
 /** Custom map legend with units, classification statement and format context. */
 export function MapLegend({ metric, format }: { metric: MetricId; format: FormatId }) {
+  const { layers } = useAppState();
   const entries = legendEntries(metric, format);
   const isIndex = metric !== "total" || format === "index";
+  const activeContext = CONTEXT_SWATCHES.filter((c) => layers[c.id]);
   return (
     <section className="panel-section glass" aria-label="Map legend">
       <h2 className="section-label">Legend</h2>
@@ -76,6 +85,16 @@ export function MapLegend({ metric, format }: { metric: MetricId; format: Format
           : "Percentage of the maximum possible score (100% = highest possible)."}
         {" "}Defined class intervals, identical across all views.
       </p>
+      {activeContext.length > 0 && (
+        <div className="legend-swatches" style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(242,244,233,0.08)" }}>
+          {activeContext.map((c) => (
+            <div className="legend-row" key={c.id}>
+              <span className="sw" style={c.style} />
+              <span>{c.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

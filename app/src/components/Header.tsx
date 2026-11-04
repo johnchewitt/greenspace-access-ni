@@ -52,6 +52,7 @@ export function Header() {
   const dispatch = useAppDispatch();
   const index = useSearchIndex();
   const [q, setQ] = useState("");
+  const [cursor, setCursor] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const hits = useMemo(() => {
@@ -102,18 +103,35 @@ export function Header() {
           <input
             ref={inputRef}
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setCursor(0);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Escape") setQ("");
-              if (e.key === "Enter" && hits[0]) choose(hits[0]);
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setCursor((c) => Math.min(c + 1, hits.length - 1));
+              }
+              if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setCursor((c) => Math.max(c - 1, 0));
+              }
+              if (e.key === "Enter" && hits[cursor]) choose(hits[cursor]);
             }}
             placeholder="Find a council or postcode…"
             aria-label="Search councils and postcode geographies"
           />
           {hits.length > 0 && (
             <div className="geo-search-results glass-strong" role="listbox">
-              {hits.map((h) => (
-                <button key={`${h.kind}${h.label}`} onClick={() => choose(h)} role="option" aria-selected="false">
+              {hits.map((h, i) => (
+                <button
+                  key={`${h.kind}${h.label}`}
+                  onClick={() => choose(h)}
+                  role="option"
+                  aria-selected={i === cursor}
+                  style={i === cursor ? { background: "rgba(67,220,193,0.12)" } : undefined}
+                >
                   <span>
                     {h.label}
                     <span className="kind"> · {h.kind}</span>

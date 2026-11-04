@@ -15,7 +15,8 @@ first; ARCHITECTURE.md governs structure; GREESPACE_METHODOLOGY.md governs every
 
 1. **`data/` is canonical and read-only by hand.** It is generated solely by
    `scripts/extract_data.py` from the source report. To change data, change the script and
-   rerun it; CI fails on diffs between script output and committed files.
+   rerun it. (The source report is not in the repo, so CI cannot regenerate data/;
+   instead the data-contract tests assert the key published values on every build.)
 2. **Never invent, estimate, extrapolate or "fix" survey values.** Published % and index
    series are both kept as published even where they disagree slightly (see
    DATA_EXTRACTION_VERIFICATION.md §3); never recompute one from the other.
@@ -44,7 +45,7 @@ first; ARCHITECTURE.md governs structure; GREESPACE_METHODOLOGY.md governs every
 
 ## Stack conventions
 
-- React 18 + TypeScript strict; Vite; ArcGIS Maps SDK for JS **5.1** via
+- React 19 + TypeScript strict; Vite; ArcGIS Maps SDK for JS **5.1** via
   `@arcgis/map-components` (no `esri-loader`); Calcite components for UI; ECharts for
   charts (shared theme from branding tokens).
 - Module layout per ARCHITECTURE.md §2. Feature logic in selectors/hooks; map and chart

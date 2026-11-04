@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Header } from "./components/Header";
 import { AboutModal, AttributionChip, MethodologyModal } from "./components/Modals";
 import { IntegrityChip } from "./components/shared";
@@ -13,6 +13,7 @@ import {
 } from "./features/pvp/PvpMode";
 import { MapHost } from "./map/MapHost";
 import { CouncilLabels } from "./map/CouncilLabels";
+import { MapTooltip } from "./map/MapTooltip";
 import { MapController } from "./map/MapController";
 import { useViewSync } from "./map/useViewSync";
 import {
@@ -26,26 +27,31 @@ const LAYER_IDS: LayerId[] = ["greenspace", "trails", "accessPoints", "bluespace
 export default function App() {
   const state = useAppState();
   const dispatch = useAppDispatch();
-  const { mode, metric, format, selectedCode, layers, basemapOn } = state;
-  const [pvpOpened, setPvpOpened] = useState(false);
+  const { mode, metric, format, selectedCode, layers, basemapOn, pvpOpened } = state;
 
-  const statusCb = useRef((id: string, s: "idle" | "loading" | "ok" | "error") =>
-    dispatch({ type: "service", id, state: s }),
+  // dispatch from useReducer is stable, so both controllers are created once.
+  const mainCtl = useMemo(
+    () =>
+      new MapController((id, s) => dispatch({ type: "service", id, state: s })),
+    [dispatch],
   );
-
-  const mainCtl = useMemo(() => new MapController(statusCb.current), []);
-  const rightCtl = useMemo(() => {
-    const c = new MapController((id, s) => statusCb.current(`right:${id}`, s));
-    c.onSelect = null;
-    return c;
-  }, []);
+  const rightCtl = useMemo(
+    () =>
+      new MapController((id, s) =>
+        dispatch({ type: "service", id: `right:${id}`, state: s }),
+      ),
+    [dispatch],
+  );
 
   // Map click → selection (both maps select; only the main map zooms)
   useEffect(() => {
-    const handler = (code: string | null) =>
-      dispatch({ type: "select", code });
-    mainCtl.onSelect = handler;
-    rightCtl.onSelect = handler;
+    const handler = (code: string | null) => dispatch({ type: "select", code });
+    mainCtl.setOnSelect(handler);
+    rightCtl.setOnSelect(handler);
+    return () => {
+      mainCtl.setOnSelect(null);
+      rightCtl.setOnSelect(null);
+    };
   }, [mainCtl, rightCtl, dispatch]);
 
   // Selection → highlight/zoom
@@ -59,10 +65,7 @@ export default function App() {
     mainCtl.setRenderer(metric, format);
   }, [metric, format, mainCtl]);
 
-  // PvP lifecycle: mount second map once; style it as provision reference
-  useEffect(() => {
-    if (mode === "pvp" && !pvpOpened) setPvpOpened(true);
-  }, [mode, pvpOpened]);
+  // PvP lifecycle: second map mounts on first entry; style it as provision reference
   useEffect(() => {
     if (!pvpOpened) return;
     const t = window.setInterval(() => {
@@ -101,6 +104,7 @@ export default function App() {
         <div className={`map-stage ${mode === "pvp" ? "split" : ""}`}>
           <MapHost controller={mainCtl} label="Greenspace Index map of Northern Ireland">
             <CouncilLabels controller={mainCtl} visible={mode === "explore" || mode === "pvp"} />
+            <MapTooltip controller={mainCtl} />
           </MapHost>
           {pvpOpened && (
             <MapHost

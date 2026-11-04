@@ -10,26 +10,25 @@ import {
   ni,
   fmtPct,
 } from "../../data";
+import {
+  fmtProvision,
+  pickLatestProvision,
+  type ProvisionAttrs,
+  type ProvisionRecord,
+} from "./provision";
 import { councilProvision2025, outscapeLayers } from "../../config/services";
 import { useAppState } from "../../state/AppState";
 import { SampleSizeBadge } from "../../components/shared";
 
-export interface ProvisionRecord {
-  lgdName: string;
-  pct400: number | null;
-  pct1km: number | null;
-  pct2km: number | null;
-}
-
 type ProvisionState =
   | { status: "loading" }
   | { status: "error" }
-  | { status: "ok"; byCode: Record<string, ProvisionRecord> };
+  | { status: "ok"; byCode: Record<string, ProvisionRecord>; year: number | null };
 
 /**
- * Query the published council provision indicators once.
- * Codes in the service may be N09… or legacy LGD2014 — match on code first,
- * then on normalised name. Values are displayed exactly as published.
+ * Query the published council provision indicators once. The service carries
+ * one row per council per analysis year — pickLatestProvision pins the most
+ * recent vintage (see provision.ts). Values are displayed exactly as published.
  */
 export function useProvision(active: boolean): ProvisionState {
   const [state, setState] = useState<ProvisionState>({ status: "loading" });
@@ -40,39 +39,18 @@ export function useProvision(active: boolean): ProvisionState {
     layer
       .queryFeatures({
         where: "1=1",
-        outFields: ["LGDName", "LGDCode", "Percent400", "Percent1km", "Percent2km"],
+        outFields: ["LGDName", "LGDCode", "Year_", "Percent400", "Percent1km", "Percent2km"],
         returnGeometry: false,
       })
       .then((fs) => {
         if (cancelled) return;
-        const norm = (s: string) =>
-          s.toLowerCase().replace(/city|and|&|borough|council|district|,|\s+/g, "");
-        const nameToCode = Object.fromEntries(
-          Object.entries(LGD_DISPLAY).map(([code, name]) => [norm(name), code]),
+        const { byCode, year } = pickLatestProvision(
+          fs.features as unknown as { attributes: ProvisionAttrs }[],
         );
-        const byCode: Record<string, ProvisionRecord> = {};
-        fs.features.forEach((f) => {
-          const a = f.attributes as {
-            LGDName?: string;
-            LGDCode?: string;
-            Percent400?: number;
-            Percent1km?: number;
-            Percent2km?: number;
-          };
-          const code =
-            a.LGDCode && a.LGDCode.startsWith("N09")
-              ? a.LGDCode
-              : nameToCode[norm(a.LGDName ?? "")];
-          if (!code) return;
-          byCode[code] = {
-            lgdName: a.LGDName ?? "",
-            pct400: a.Percent400 ?? null,
-            pct1km: a.Percent1km ?? null,
-            pct2km: a.Percent2km ?? null,
-          };
-        });
         setState(
-          Object.keys(byCode).length > 0 ? { status: "ok", byCode } : { status: "error" },
+          Object.keys(byCode).length > 0
+            ? { status: "ok", byCode, year }
+            : { status: "error" },
         );
       })
       .catch(() => !cancelled && setState({ status: "error" }));
@@ -82,9 +60,6 @@ export function useProvision(active: boolean): ProvisionState {
   }, [active, state.status]);
   return state;
 }
-
-const fmtHh = (v: number | null) =>
-  v == null ? "—" : `${v > 1 ? v.toFixed(1) : (v * 100).toFixed(1)}%`;
 
 export function PvpBanner() {
   return (
@@ -162,19 +137,20 @@ export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
         <>
           <div className="pvp-metric">
             <span>Households within 400 m of greenspace or trails</span>
-            <span className="v accent">{fmtHh(rec.pct400)}</span>
+            <span className="v accent">{fmtProvision(rec.pct400)}</span>
           </div>
           <div className="pvp-metric">
             <span>Within 1 km</span>
-            <span className="v">{fmtHh(rec.pct1km)}</span>
+            <span className="v">{fmtProvision(rec.pct1km)}</span>
           </div>
           <div className="pvp-metric">
             <span>Within 2 km</span>
-            <span className="v">{fmtHh(rec.pct2km)}</span>
+            <span className="v">{fmtProvision(rec.pct2km)}</span>
           </div>
           <p className="legend-note">
-            Published provision indicators — GreenspaceNI Council Analysis 2025 (network
-            analysis from access points, sites &gt; 2 ha).
+            Published provision indicators — GreenspaceNI council analysis
+            {provision.status === "ok" && provision.year ? ` (${provision.year} vintage)` : ""},
+            network analysis from access points, sites &gt; 2 ha.
           </p>
         </>
       ) : provision.status === "error" ? (
