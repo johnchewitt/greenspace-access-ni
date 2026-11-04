@@ -1,0 +1,305 @@
+[
+  {
+    "postcode_sector": "BT4 2",
+    "place": "East Belfast",
+    "total_pct": 84.49,
+    "total_index": 109.906,
+    "themes_index": {
+      "access_to": 121,
+      "access_within": 106,
+      "quality": 106,
+      "benefits": 106
+    },
+    "sample_n": 32
+  },
+  {
+    "postcode_sector": "BT39 9",
+    "place": "Ballyclare (Rural)",
+    "total_pct": 83.52,
+    "total_index": 108.545,
+    "themes_index": {
+      "access_to": 118,
+      "access_within": 106,
+      "quality": 107,
+      "benefits": 104
+    },
+    "sample_n": 44
+  },
+  {
+    "postcode_sector": "BT16 2",
+    "place": "Dundonald",
+    "total_pct": 82.12,
+    "total_index": 107.304,
+    "themes_index": {
+      "access_to": 128,
+      "access_within": 102,
+      "quality": 98,
+      "benefits": 102
+    },
+    "sample_n": 36,
+    "source_label_note": "Report table row printed 'South Belfast'; label swapped with BT6 8 in source (see verification report)."
+  },
+  {
+    "postcode_sector": "BT6 8",
+    "place": "South Belfast",
+    "total_pct": 82.36,
+    "total_index": 107.076,
+    "themes_index": {
+      "access_to": 116,
+      "access_within": 104,
+      "quality": 107,
+      "benefits": 101
+    },
+    "sample_n": 36,
+    "source_label_note": "Report table row printed 'Dundonald'; label swapped with BT16 2 in source (see verification report)."
+  },
+  {
+    "postcode_sector": "BT34 4",
+    "place": "Newry",
+    "total_pct": 81.71,
+    "total_index": 106.151,
+    "themes_index": {
+      "access_to": 114,
+      "access_within": 102,
+      "quality": 105,
+      "benefits": 103
+    },
+    "sample_n": 30
+  },
+  {
+    "postcode_sector": "BT23 7",
+    "place": "Comber",
+    "total_pct": 81.44,
+    "total_index": 105.218,
+    "themes_index": {
+      "access_to": 102,
+      "access_within": 108,
+      "quality": 106,
+      "benefits": 104
+    },
+    "sample_n": 40
+  },
+  {
+    "postcode_sector": "BT8 8",
+    "place": "Carryduff / South Belfast",
+    "total_pct": 80.21,
+    "total_index": 104.027,
+    "themes_index": {
+      "access_to": 110,
+      "access_within": 101,
+      "quality": 99,
+      "benefits": 106
+    },
+    "sample_n": 30
+  },
+  {
+    "postcode_sector": "BT41 1",
+    "place": "Antrim",
+    "total_pct": 80.0,
+    "total_index": 103.223,
+    "themes_index": {
+      "access_to": 97,
+      "access_within": 105,
+      "quality": 108,
+      "benefits": 102
+    },
+    "sample_n": 39
+  },
+  {
+    "postcode_sector": "BT22 1",
+    "place": "Ards Peninsula",
+    "total_pct": 79.04,
+    "total_index": 102.932,
+    "themes_index": {
+      "access_to": 115,
+      "access_within": 95,
+      "quality": 102,
+      "benefits": 99
+    },
+    "sample_n": 30
+  },
+  {
+    "postcode_sector": "BT19 1",
+    "place": "Bangor",
+    "total_pct": 77.5,
+    "total_index": 100.873,
+    "themes_index": {
+      "access_to": 112,
+      "access_within": 98,
+      "quality": 97,
+      "benefits": 96
+    },
+    "sample_n": 34
+  },
+  {
+    "postcode_sector": "BT48 7",
+    "place": "Derry / Londonderry",
+    "total_pct": 77.3,
+    "total_index": 100.499,
+    "themes_index": {
+      "access_to": 110,
+      "access_within": 97,
+      "quality": 99,
+      "benefits": 97
+    },
+    "sample_n": 31
+  },
+  {
+    "postcode_sector": "BT51 3",
+    "place": "Coleraine",
+    "total_pct": 77.8,
+    "total_index": 100.471,
+    "themes_index": {
+      "access_to": 97,
+      "access_within": 101,
+      "quality": 104,
+      "benefits": 100
+    },
+    "sample_n": 38
+  },
+  {
+    "postcode_sector": "BT28 3",
+    "place": "Lisburn",
+    "total_pct": 77.36,
+    "total_index": 100.133,
+    "themes_index": {
+      "access_to": 101,
+      "access_within": 102,
+      "quality": 100,
+      "benefits": 97
+    },
+    "sample_n": 37
+  },
+  {
+    "postcode_sector": "BT52 1",
+    "place": "Coleraine",
+    "total_pct": 76.21,
+    "total_index": 99.612,
+    "themes_index": {
+      "access_to": 119,
+      "access_within": 92,
+      "quality": 94,
+      "benefits": 94
+    },
+    "sample_n": 35
+  },
+  {
+    "postcode_sector": "BT38 7",
+    "place": "Carrickfergus",
+    "total_pct": 76.48,
+    "total_index": 99.538,
+    "themes_index": {
+      "access_to": 111,
+      "access_within": 96,
+      "quality": 95,
+      "benefits": 96
+    },
+    "sample_n": 33
+  },
+  {
+    "postcode_sector": "BT28 2",
+    "place": "Lisburn",
+    "total_pct": 77.18,
+    "total_index": 99.004,
+    "themes_index": {
+      "access_to": 83,
+      "access_within": 103,
+      "quality": 106,
+      "benefits": 103
+    },
+    "sample_n": 31
+  },
+  {
+    "postcode_sector": "BT48 0",
+    "place": "Derry / Londonderry",
+    "total_pct": 76.17,
+    "total_index": 98.754,
+    "themes_index": {
+      "access_to": 103,
+      "access_within": 92,
+      "quality": 100,
+      "benefits": 101
+    },
+    "sample_n": 32
+  },
+  {
+    "postcode_sector": "BT36 6",
+    "place": "Glengormley",
+    "total_pct": 76.14,
+    "total_index": 98.36,
+    "themes_index": {
+      "access_to": 95,
+      "access_within": 102,
+      "quality": 100,
+      "benefits": 96
+    },
+    "sample_n": 58
+  },
+  {
+    "postcode_sector": "BT23 5",
+    "place": "Newtownards",
+    "total_pct": 75.86,
+    "total_index": 98.22,
+    "themes_index": {
+      "access_to": 100,
+      "access_within": 97,
+      "quality": 97,
+      "benefits": 98
+    },
+    "sample_n": 45
+  },
+  {
+    "postcode_sector": "BT53 7",
+    "place": "Ballymoney",
+    "total_pct": 74.19,
+    "total_index": 96.219,
+    "themes_index": {
+      "access_to": 101,
+      "access_within": 96,
+      "quality": 93,
+      "benefits": 94
+    },
+    "sample_n": 31
+  },
+  {
+    "postcode_sector": "BT38 8",
+    "place": "Carrickfergus",
+    "total_pct": 74.0,
+    "total_index": 95.414,
+    "themes_index": {
+      "access_to": 90,
+      "access_within": 100,
+      "quality": 93,
+      "benefits": 98
+    },
+    "sample_n": 45
+  },
+  {
+    "postcode_sector": "BT40 1",
+    "place": "Larne",
+    "total_pct": 72.56,
+    "total_index": 94.34,
+    "themes_index": {
+      "access_to": 103,
+      "access_within": 93,
+      "quality": 92,
+      "benefits": 89
+    },
+    "sample_n": 45,
+    "source_label_note": "Report table row printed 'Lurgan / Craigavon'; label swapped with BT66 7 in source (see verification report)."
+  },
+  {
+    "postcode_sector": "BT66 7",
+    "place": "Lurgan / Craigavon",
+    "total_pct": 72.89,
+    "total_index": 93.403,
+    "themes_index": {
+      "access_to": 76,
+      "access_within": 99,
+      "quality": 101,
+      "benefits": 97
+    },
+    "sample_n": 45,
+    "source_label_note": "Report table row printed 'Larne'; label swapped with BT40 1 in source (see verification report)."
+  }
+]

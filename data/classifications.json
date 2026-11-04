@@ -1,0 +1,233 @@
+{
+  "deprivation": {
+    "classification": "Index of Multiple Deprivation (decile extremes reported only)",
+    "groups": [
+      {
+        "group": "Least deprived 10%",
+        "total_pct": 0.820295,
+        "total_index": 107.0,
+        "themes_index": {
+          "access_to": 115,
+          "access_within": 105,
+          "quality": 103,
+          "benefits": 103
+        }
+      },
+      {
+        "group": "Most deprived 10%",
+        "total_pct": 0.773374,
+        "total_index": 99.716,
+        "themes_index": {
+          "access_to": 104,
+          "access_within": 98,
+          "quality": 100,
+          "benefits": 99
+        }
+      }
+    ]
+  },
+  "urban_rural": {
+    "groups": [
+      {
+        "group": "Urban",
+        "total_pct": 0.788781,
+        "total_index": 102.0,
+        "themes_index": {
+          "access_to": 107,
+          "access_within": 101,
+          "quality": 101,
+          "benefits": 100
+        }
+      },
+      {
+        "group": "Rural",
+        "total_pct": 0.750546,
+        "total_index": 97.0,
+        "themes_index": {
+          "access_to": 87,
+          "access_within": 99,
+          "quality": 99,
+          "benefits": 100
+        }
+      }
+    ]
+  },
+  "age": {
+    "groups": [
+      {
+        "group": "18-24",
+        "total_pct": 0.762155,
+        "total_index": 99.0,
+        "themes_index": {
+          "access_to": 100,
+          "access_within": 96,
+          "quality": 98,
+          "benefits": 100
+        }
+      },
+      {
+        "group": "25-34",
+        "total_pct": 0.786702,
+        "total_index": 102.0,
+        "themes_index": {
+          "access_to": 103,
+          "access_within": 101,
+          "quality": 102,
+          "benefits": 102
+        }
+      },
+      {
+        "group": "35-49",
+        "total_pct": 0.774218,
+        "total_index": 100.335,
+        "themes_index": {
+          "access_to": 100,
+          "access_within": 100,
+          "quality": 100,
+          "benefits": 101
+        }
+      },
+      {
+        "group": "50-64",
+        "total_pct": 0.774923,
+        "total_index": 99.939,
+        "themes_index": {
+          "access_to": 101,
+          "access_within": 100,
+          "quality": 100,
+          "benefits": 100
+        }
+      },
+      {
+        "group": "65+",
+        "total_pct": 0.763392,
+        "total_index": 98.867,
+        "themes_index": {
+          "access_to": 96,
+          "access_within": 101,
+          "quality": 100,
+          "benefits": 98
+        }
+      }
+    ]
+  },
+  "sex": {
+    "groups": [
+      {
+        "group": "Male",
+        "total_pct": 0.785221,
+        "total_index": 102.099,
+        "themes_index": {
+          "access_to": 102,
+          "access_within": 103,
+          "quality": 101,
+          "benefits": 100
+        }
+      },
+      {
+        "group": "Female",
+        "total_pct": 0.762781,
+        "total_index": 99.082,
+        "themes_index": {
+          "access_to": 98,
+          "access_within": 97,
+          "quality": 99,
+          "benefits": 100
+        }
+      }
+    ]
+  },
+  "visit_frequency": {
+    "note": "Reported as a validity check: higher scores among groups with greater greenspace engagement support the credibility of the methodology.",
+    "groups": [
+      {
+        "group": "Every day",
+        "total_pct": 0.824746,
+        "total_index": 106.843,
+        "themes_index": {
+          "access_to": 110,
+          "access_within": 106,
+          "quality": 105,
+          "benefits": 107
+        }
+      },
+      {
+        "group": "More than twice a week, but not every day",
+        "total_pct": 0.808109,
+        "total_index": 104.676,
+        "themes_index": {
+          "access_to": 107,
+          "access_within": 104,
+          "quality": 103,
+          "benefits": 104
+        }
+      },
+      {
+        "group": "Twice a week",
+        "total_pct": 0.788576,
+        "total_index": 102.039,
+        "themes_index": {
+          "access_to": 102,
+          "access_within": 101,
+          "quality": 103,
+          "benefits": 102
+        }
+      },
+      {
+        "group": "Once a week",
+        "total_pct": 0.770798,
+        "total_index": 99.603,
+        "themes_index": {
+          "access_to": 98,
+          "access_within": 100,
+          "quality": 100,
+          "benefits": 101
+        }
+      },
+      {
+        "group": "Once or twice a month",
+        "total_pct": 0.750746,
+        "total_index": 96.944,
+        "themes_index": {
+          "access_to": 93,
+          "access_within": 99,
+          "quality": 98,
+          "benefits": 97
+        }
+      },
+      {
+        "group": "Once every 2 to 3 months",
+        "total_pct": 0.712275,
+        "total_index": 92.055,
+        "themes_index": {
+          "access_to": 90,
+          "access_within": 93,
+          "quality": 94,
+          "benefits": 91
+        }
+      },
+      {
+        "group": "Less often",
+        "total_pct": 0.642204,
+        "total_index": 82.846,
+        "themes_index": {
+          "access_to": 78,
+          "access_within": 86,
+          "quality": 86,
+          "benefits": 82
+        }
+      },
+      {
+        "group": "Never",
+        "total_pct": 0.589904,
+        "total_index": 76.103,
+        "themes_index": {
+          "access_to": 71,
+          "access_within": 80,
+          "quality": 80,
+          "benefits": 73
+        }
+      }
+    ]
+  }
+}

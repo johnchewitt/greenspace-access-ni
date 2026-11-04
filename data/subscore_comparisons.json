@@ -1,0 +1,57 @@
+{
+  "note": "Slide 22 illustrative comparisons, theme % of maximum. The postcode chart's 'BT82 Ballymoney' label is a source error: BT82 is Strabane (as slide 11 shows); its values reconcile to BT82's total of 71%.",
+  "by_deprivation": {
+    "themes_pct": {
+      "Northern Ireland": {
+        "access_to": 0.65,
+        "access_within": 0.81,
+        "quality": 0.8,
+        "benefits": 0.83
+      },
+      "Least deprived": {
+        "access_to": 0.75,
+        "access_within": 0.85,
+        "quality": 0.82,
+        "benefits": 0.86
+      },
+      "Most deprived": {
+        "access_to": 0.67,
+        "access_within": 0.79,
+        "quality": 0.8,
+        "benefits": 0.83
+      }
+    },
+    "totals_pct": {
+      "Northern Ireland": 77,
+      "Least deprived": 82,
+      "Most deprived": 77
+    }
+  },
+  "by_postcode_area": {
+    "themes_pct": {
+      "Northern Ireland": {
+        "access_to": 0.65,
+        "access_within": 0.81,
+        "quality": 0.8,
+        "benefits": 0.83
+      },
+      "BT20 (Bangor)": {
+        "access_to": 0.8,
+        "access_within": 0.89,
+        "quality": 0.87,
+        "benefits": 0.9
+      },
+      "BT82 (Strabane; printed 'Ballymoney' in source)": {
+        "access_to": 0.58,
+        "access_within": 0.77,
+        "quality": 0.73,
+        "benefits": 0.78
+      }
+    },
+    "totals_pct": {
+      "Northern Ireland": 77,
+      "BT20": 87,
+      "BT82": 71
+    }
+  }
+}

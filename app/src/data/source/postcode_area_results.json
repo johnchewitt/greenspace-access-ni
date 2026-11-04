@@ -1,0 +1,628 @@
+[
+  {
+    "postcode_area": "BT20",
+    "place": "Bangor",
+    "total_pct": 86.52,
+    "total_index": 112.461,
+    "themes_index": {
+      "access_to": 122,
+      "access_within": 110,
+      "quality": 110,
+      "benefits": 108
+    },
+    "sample_n": 66
+  },
+  {
+    "postcode_area": "BT9",
+    "place": "South Belfast",
+    "total_pct": 84.33,
+    "total_index": 109.796,
+    "themes_index": {
+      "access_to": 123,
+      "access_within": 106,
+      "quality": 106,
+      "benefits": 105
+    },
+    "sample_n": 45
+  },
+  {
+    "postcode_area": "BT4",
+    "place": "East Belfast",
+    "total_pct": 83.01,
+    "total_index": 107.794,
+    "themes_index": {
+      "access_to": 116,
+      "access_within": 104,
+      "quality": 105,
+      "benefits": 106
+    },
+    "sample_n": 74
+  },
+  {
+    "postcode_area": "BT67",
+    "place": "Moira",
+    "total_pct": 82.86,
+    "total_index": 107.642,
+    "themes_index": {
+      "access_to": 116,
+      "access_within": 105,
+      "quality": 106,
+      "benefits": 104
+    },
+    "sample_n": 49
+  },
+  {
+    "postcode_area": "BT37",
+    "place": "Whiteabbey / Jordanstown",
+    "total_pct": 81.97,
+    "total_index": 106.831,
+    "themes_index": {
+      "access_to": 122,
+      "access_within": 102,
+      "quality": 103,
+      "benefits": 101
+    },
+    "sample_n": 47
+  },
+  {
+    "postcode_area": "BT15",
+    "place": "North Belfast",
+    "total_pct": 81.94,
+    "total_index": 106.72,
+    "themes_index": {
+      "access_to": 120,
+      "access_within": 102,
+      "quality": 103,
+      "benefits": 101
+    },
+    "sample_n": 49,
+    "source_label_note": "Report table row printed 'Belfast City Centre'; label swapped with BT1 in source (see verification report)."
+  },
+  {
+    "postcode_area": "BT60",
+    "place": "Armagh",
+    "total_pct": 82.29,
+    "total_index": 106.578,
+    "themes_index": {
+      "access_to": 109,
+      "access_within": 107,
+      "quality": 105,
+      "benefits": 105
+    },
+    "sample_n": 30
+  },
+  {
+    "postcode_area": "BT1",
+    "place": "Belfast City Centre",
+    "total_pct": 81.99,
+    "total_index": 106.239,
+    "themes_index": {
+      "access_to": 109,
+      "access_within": 106,
+      "quality": 105,
+      "benefits": 104
+    },
+    "sample_n": 49,
+    "source_label_note": "Report table row printed 'North Belfast'; label swapped with BT15 in source (see verification report)."
+  },
+  {
+    "postcode_area": "BT27",
+    "place": "Lisburn",
+    "total_pct": 81.08,
+    "total_index": 105.31,
+    "themes_index": {
+      "access_to": 113,
+      "access_within": 105,
+      "quality": 102,
+      "benefits": 101
+    },
+    "sample_n": 51
+  },
+  {
+    "postcode_area": "BT16",
+    "place": "Dundonald",
+    "total_pct": 80.77,
+    "total_index": 105.131,
+    "themes_index": {
+      "access_to": 117,
+      "access_within": 102,
+      "quality": 101,
+      "benefits": 101
+    },
+    "sample_n": 52
+  },
+  {
+    "postcode_area": "BT6",
+    "place": "South Belfast",
+    "total_pct": 80.55,
+    "total_index": 104.724,
+    "themes_index": {
+      "access_to": 114,
+      "access_within": 101,
+      "quality": 103,
+      "benefits": 101
+    },
+    "sample_n": 93
+  },
+  {
+    "postcode_area": "BT39",
+    "place": "Ballyclare",
+    "total_pct": 80.81,
+    "total_index": 104.427,
+    "themes_index": {
+      "access_to": 102,
+      "access_within": 105,
+      "quality": 107,
+      "benefits": 104
+    },
+    "sample_n": 60
+  },
+  {
+    "postcode_area": "BT5",
+    "place": "East Belfast",
+    "total_pct": 79.95,
+    "total_index": 103.729,
+    "themes_index": {
+      "access_to": 109,
+      "access_within": 106,
+      "quality": 102,
+      "benefits": 99
+    },
+    "sample_n": 82
+  },
+  {
+    "postcode_area": "BT8",
+    "place": "South Belfast",
+    "total_pct": 79.61,
+    "total_index": 103.227,
+    "themes_index": {
+      "access_to": 109,
+      "access_within": 100,
+      "quality": 99,
+      "benefits": 105
+    },
+    "sample_n": 57
+  },
+  {
+    "postcode_area": "BT14",
+    "place": "North Belfast",
+    "total_pct": 79.22,
+    "total_index": 103.135,
+    "themes_index": {
+      "access_to": 115,
+      "access_within": 101,
+      "quality": 97,
+      "benefits": 99
+    },
+    "sample_n": 58
+  },
+  {
+    "postcode_area": "BT19",
+    "place": "Bangor",
+    "total_pct": 79.33,
+    "total_index": 102.921,
+    "themes_index": {
+      "access_to": 108,
+      "access_within": 101,
+      "quality": 102,
+      "benefits": 101
+    },
+    "sample_n": 88
+  },
+  {
+    "postcode_area": "BT43",
+    "place": "Ballymena",
+    "total_pct": 79.43,
+    "total_index": 102.849,
+    "themes_index": {
+      "access_to": 105,
+      "access_within": 102,
+      "quality": 100,
+      "benefits": 104
+    },
+    "sample_n": 46
+  },
+  {
+    "postcode_area": "BT34",
+    "place": "Newry / Mournes",
+    "total_pct": 79.37,
+    "total_index": 102.822,
+    "themes_index": {
+      "access_to": 105,
+      "access_within": 101,
+      "quality": 103,
+      "benefits": 102
+    },
+    "sample_n": 81
+  },
+  {
+    "postcode_area": "BT41",
+    "place": "Antrim",
+    "total_pct": 79.44,
+    "total_index": 102.444,
+    "themes_index": {
+      "access_to": 96,
+      "access_within": 106,
+      "quality": 107,
+      "benefits": 102
+    },
+    "sample_n": 89
+  },
+  {
+    "postcode_area": "BT30",
+    "place": "Downpatrick",
+    "total_pct": 78.18,
+    "total_index": 101.223,
+    "themes_index": {
+      "access_to": 103,
+      "access_within": 104,
+      "quality": 98,
+      "benefits": 100
+    },
+    "sample_n": 46
+  },
+  {
+    "postcode_area": "BT71",
+    "place": "Dungannon",
+    "total_pct": 78.61,
+    "total_index": 101.219,
+    "themes_index": {
+      "access_to": 92,
+      "access_within": 103,
+      "quality": 105,
+      "benefits": 105
+    },
+    "sample_n": 52
+  },
+  {
+    "postcode_area": "BT11",
+    "place": "West Belfast",
+    "total_pct": 78.23,
+    "total_index": 101.018,
+    "themes_index": {
+      "access_to": 98,
+      "access_within": 102,
+      "quality": 100,
+      "benefits": 103
+    },
+    "sample_n": 55
+  },
+  {
+    "postcode_area": "BT53",
+    "place": "Ballymoney",
+    "total_pct": 77.66,
+    "total_index": 100.375,
+    "themes_index": {
+      "access_to": 99,
+      "access_within": 101,
+      "quality": 101,
+      "benefits": 101
+    },
+    "sample_n": 69
+  },
+  {
+    "postcode_area": "BT7",
+    "place": "South Belfast",
+    "total_pct": 77.28,
+    "total_index": 100.339,
+    "themes_index": {
+      "access_to": 107,
+      "access_within": 100,
+      "quality": 96,
+      "benefits": 97
+    },
+    "sample_n": 39
+  },
+  {
+    "postcode_area": "BT23",
+    "place": "Newtownards",
+    "total_pct": 77.28,
+    "total_index": 99.837,
+    "themes_index": {
+      "access_to": 97,
+      "access_within": 102,
+      "quality": 100,
+      "benefits": 100
+    },
+    "sample_n": 157
+  },
+  {
+    "postcode_area": "BT36",
+    "place": "Newtownabbey",
+    "total_pct": 76.99,
+    "total_index": 99.536,
+    "themes_index": {
+      "access_to": 98,
+      "access_within": 101,
+      "quality": 100,
+      "benefits": 99
+    },
+    "sample_n": 110
+  },
+  {
+    "postcode_area": "BT12",
+    "place": "West Belfast",
+    "total_pct": 76.48,
+    "total_index": 99.345,
+    "themes_index": {
+      "access_to": 107,
+      "access_within": 94,
+      "quality": 100,
+      "benefits": 97
+    },
+    "sample_n": 54
+  },
+  {
+    "postcode_area": "BT45",
+    "place": "Magherafelt",
+    "total_pct": 77.21,
+    "total_index": 99.181,
+    "themes_index": {
+      "access_to": 86,
+      "access_within": 103,
+      "quality": 105,
+      "benefits": 103
+    },
+    "sample_n": 48
+  },
+  {
+    "postcode_area": "BT28",
+    "place": "Lisburn",
+    "total_pct": 76.84,
+    "total_index": 99.095,
+    "themes_index": {
+      "access_to": 93,
+      "access_within": 102,
+      "quality": 102,
+      "benefits": 100
+    },
+    "sample_n": 89
+  },
+  {
+    "postcode_area": "BT22",
+    "place": "Ards Peninsula",
+    "total_pct": 76.06,
+    "total_index": 98.466,
+    "themes_index": {
+      "access_to": 100,
+      "access_within": 95,
+      "quality": 99,
+      "benefits": 100
+    },
+    "sample_n": 52
+  },
+  {
+    "postcode_area": "BT35",
+    "place": "Newry / South Armagh",
+    "total_pct": 76.11,
+    "total_index": 98.266,
+    "themes_index": {
+      "access_to": 95,
+      "access_within": 99,
+      "quality": 97,
+      "benefits": 102
+    },
+    "sample_n": 46
+  },
+  {
+    "postcode_area": "BT66",
+    "place": "Craigavon / Lurgan",
+    "total_pct": 76.48,
+    "total_index": 98.219,
+    "themes_index": {
+      "access_to": 84,
+      "access_within": 103,
+      "quality": 104,
+      "benefits": 101
+    },
+    "sample_n": 71
+  },
+  {
+    "postcode_area": "BT42",
+    "place": "Ballymena",
+    "total_pct": 75.8,
+    "total_index": 98.16,
+    "themes_index": {
+      "access_to": 100,
+      "access_within": 96,
+      "quality": 97,
+      "benefits": 99
+    },
+    "sample_n": 69
+  },
+  {
+    "postcode_area": "BT62",
+    "place": "Craigavon",
+    "total_pct": 75.67,
+    "total_index": 97.96,
+    "themes_index": {
+      "access_to": 99,
+      "access_within": 97,
+      "quality": 99,
+      "benefits": 97
+    },
+    "sample_n": 41
+  },
+  {
+    "postcode_area": "BT38",
+    "place": "Carrickfergus",
+    "total_pct": 75.53,
+    "total_index": 97.797,
+    "themes_index": {
+      "access_to": 100,
+      "access_within": 99,
+      "quality": 95,
+      "benefits": 97
+    },
+    "sample_n": 94
+  },
+  {
+    "postcode_area": "BT13",
+    "place": "West Belfast",
+    "total_pct": 75.09,
+    "total_index": 97.51,
+    "themes_index": {
+      "access_to": 104,
+      "access_within": 96,
+      "quality": 95,
+      "benefits": 95
+    },
+    "sample_n": 41
+  },
+  {
+    "postcode_area": "BT48",
+    "place": "Derry / Londonderry",
+    "total_pct": 75.08,
+    "total_index": 97.307,
+    "themes_index": {
+      "access_to": 101,
+      "access_within": 94,
+      "quality": 97,
+      "benefits": 97
+    },
+    "sample_n": 96
+  },
+  {
+    "postcode_area": "BT63",
+    "place": "Portadown",
+    "total_pct": 75.53,
+    "total_index": 97.127,
+    "themes_index": {
+      "access_to": 87,
+      "access_within": 97,
+      "quality": 100,
+      "benefits": 105
+    },
+    "sample_n": 33
+  },
+  {
+    "postcode_area": "BT47",
+    "place": "Derry (Waterside)",
+    "total_pct": 75.28,
+    "total_index": 97.0,
+    "themes_index": {
+      "access_to": 90,
+      "access_within": 98,
+      "quality": 98,
+      "benefits": 102
+    },
+    "sample_n": 97
+  },
+  {
+    "postcode_area": "BT51",
+    "place": "Coleraine / North Coast",
+    "total_pct": 75.04,
+    "total_index": 96.961,
+    "themes_index": {
+      "access_to": 94,
+      "access_within": 97,
+      "quality": 101,
+      "benefits": 96
+    },
+    "sample_n": 63
+  },
+  {
+    "postcode_area": "BT24",
+    "place": "Ballynahinch",
+    "total_pct": 74.86,
+    "total_index": 96.336,
+    "themes_index": {
+      "access_to": 87,
+      "access_within": 100,
+      "quality": 100,
+      "benefits": 99
+    },
+    "sample_n": 37
+  },
+  {
+    "postcode_area": "BT40",
+    "place": "Larne",
+    "total_pct": 73.52,
+    "total_index": 95.328,
+    "themes_index": {
+      "access_to": 99,
+      "access_within": 95,
+      "quality": 94,
+      "benefits": 93
+    },
+    "sample_n": 64
+  },
+  {
+    "postcode_area": "BT17",
+    "place": "Dunmurry",
+    "total_pct": 73.57,
+    "total_index": 95.216,
+    "themes_index": {
+      "access_to": 96,
+      "access_within": 95,
+      "quality": 94,
+      "benefits": 96
+    },
+    "sample_n": 48
+  },
+  {
+    "postcode_area": "BT52",
+    "place": "Coleraine",
+    "total_pct": 73.29,
+    "total_index": 95.164,
+    "themes_index": {
+      "access_to": 102,
+      "access_within": 92,
+      "quality": 93,
+      "benefits": 93
+    },
+    "sample_n": 57
+  },
+  {
+    "postcode_area": "BT32",
+    "place": "Banbridge",
+    "total_pct": 72.79,
+    "total_index": 94.447,
+    "themes_index": {
+      "access_to": 99,
+      "access_within": 93,
+      "quality": 95,
+      "benefits": 90
+    },
+    "sample_n": 43
+  },
+  {
+    "postcode_area": "BT94",
+    "place": "Irvinestown / Kesh",
+    "total_pct": 72.27,
+    "total_index": 92.39,
+    "themes_index": {
+      "access_to": 72,
+      "access_within": 97,
+      "quality": 101,
+      "benefits": 100
+    },
+    "sample_n": 32
+  },
+  {
+    "postcode_area": "BT82",
+    "place": "Strabane",
+    "total_pct": 71.33,
+    "total_index": 92.113,
+    "themes_index": {
+      "access_to": 89,
+      "access_within": 94,
+      "quality": 92,
+      "benefits": 93
+    },
+    "sample_n": 61
+  },
+  {
+    "postcode_area": "BT44",
+    "place": "Ballymoney / Glens",
+    "total_pct": 71.33,
+    "total_index": 91.393,
+    "themes_index": {
+      "access_to": 76,
+      "access_within": 92,
+      "quality": 93,
+      "benefits": 104
+    },
+    "sample_n": 30
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "name": "greenspace-access-ni",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Greenspace Access NI — Understanding Access, Quality & Wellbeing Across Northern Ireland",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@arcgis/core": "5.1.27",
+    "@arcgis/map-components": "5.1.27",
+    "@esri/calcite-components": "5.2.0",
+    "@fontsource/fraunces": "^5.1.0",
+    "@fontsource/manrope": "^5.1.0",
+    "echarts": "^6.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.2",
+    "vite": "^7.2.7",
+    "vite-plugin-static-copy": "^3.0.0",
+    "vitest": "^3.0.0"
+  }
+}

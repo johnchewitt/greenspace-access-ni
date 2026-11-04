@@ -1,0 +1,45 @@
+{
+  "themes": [
+    {
+      "id": "access_to",
+      "name": "Accessibility To Greenspace",
+      "inputs": [
+        "Q14: easy to get to without a car",
+        "Q15: walk time to nearest greenspace"
+      ],
+      "max_points": 10
+    },
+    {
+      "id": "access_within",
+      "name": "Access Within Greenspace",
+      "inputs": [
+        "Q14: safe and welcoming",
+        "Q14: inclusive for people of all abilities"
+      ],
+      "max_points": 10
+    },
+    {
+      "id": "quality",
+      "name": "Quality",
+      "inputs": [
+        "Q14: easy to navigate, with clear paths and signage",
+        "Q14: provide the amenities and facilities I need",
+        "Q14: feel well cared for",
+        "Q14: rich in nature and wildlife"
+      ],
+      "max_points": 20
+    },
+    {
+      "id": "benefits",
+      "name": "Benefits",
+      "inputs": [
+        "Q14: benefit my mental health and encourage physical activity",
+        "Q14: improve my sense of community"
+      ],
+      "max_points": 10
+    }
+  ],
+  "aggregation": "Each theme total is expressed as a % of its maximum possible value; the four theme percentages are averaged (equal weights) to give the Overall Greenspace Index for each respondent, then aggregated across population groups/areas.",
+  "weighting": "Equal weighting of inputs within themes and of the four themes in the overall score, per project steering group feedback — transparent, replicable, avoids subjective weightings.",
+  "applied_to": "All 4,000 POMNI respondents"
+}

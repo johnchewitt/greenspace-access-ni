@@ -1,0 +1,24 @@
+postcode_sector,place,total_pct,total_index,access_to_index,access_within_index,quality_index,benefits_index,sample_n,source_label_note
+BT4 2,East Belfast,84.49,109.906,121,106,106,106,32,
+BT39 9,Ballyclare (Rural),83.52,108.545,118,106,107,104,44,
+BT16 2,Dundonald,82.12,107.304,128,102,98,102,36,Report table row printed 'South Belfast'; label swapped with BT6 8 in source (see verification report).
+BT6 8,South Belfast,82.36,107.076,116,104,107,101,36,Report table row printed 'Dundonald'; label swapped with BT16 2 in source (see verification report).
+BT34 4,Newry,81.71,106.151,114,102,105,103,30,
+BT23 7,Comber,81.44,105.218,102,108,106,104,40,
+BT8 8,Carryduff / South Belfast,80.21,104.027,110,101,99,106,30,
+BT41 1,Antrim,80.0,103.223,97,105,108,102,39,
+BT22 1,Ards Peninsula,79.04,102.932,115,95,102,99,30,
+BT19 1,Bangor,77.5,100.873,112,98,97,96,34,
+BT48 7,Derry / Londonderry,77.3,100.499,110,97,99,97,31,
+BT51 3,Coleraine,77.8,100.471,97,101,104,100,38,
+BT28 3,Lisburn,77.36,100.133,101,102,100,97,37,
+BT52 1,Coleraine,76.21,99.612,119,92,94,94,35,
+BT38 7,Carrickfergus,76.48,99.538,111,96,95,96,33,
+BT28 2,Lisburn,77.18,99.004,83,103,106,103,31,
+BT48 0,Derry / Londonderry,76.17,98.754,103,92,100,101,32,
+BT36 6,Glengormley,76.14,98.36,95,102,100,96,58,
+BT23 5,Newtownards,75.86,98.22,100,97,97,98,45,
+BT53 7,Ballymoney,74.19,96.219,101,96,93,94,31,
+BT38 8,Carrickfergus,74.0,95.414,90,100,93,98,45,
+BT40 1,Larne,72.56,94.34,103,93,92,89,45,Report table row printed 'Lurgan / Craigavon'; label swapped with BT66 7 in source (see verification report).
+BT66 7,Lurgan / Craigavon,72.89,93.403,76,99,101,97,45,Report table row printed 'Larne'; label swapped with BT40 1 in source (see verification report).

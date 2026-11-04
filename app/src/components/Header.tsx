@@ -1,0 +1,155 @@
+import { useMemo, useRef, useState } from "react";
+import { APP_NAME, APP_SUBTITLE } from "../config/branding";
+import {
+  LGD_DISPLAY,
+  lgd,
+  postcodeAreas,
+  postcodeSectors,
+  fmtPct1,
+} from "../data";
+import { useAppDispatch, useAppState, type Mode } from "../state/AppState";
+
+const MODES: { id: Mode; label: string; signature?: boolean }[] = [
+  { id: "explore", label: "EXPLORE" },
+  { id: "understand", label: "UNDERSTAND" },
+  { id: "compare", label: "COMPARE" },
+  { id: "pvp", label: "PERCEPTION VS PROVISION", signature: true },
+];
+
+interface SearchHit {
+  kind: "Council" | "Postcode area" | "Postcode sector";
+  label: string;
+  detail: string;
+  code?: string;
+}
+
+function useSearchIndex(): SearchHit[] {
+  return useMemo(
+    () => [
+      ...lgd.map((r) => ({
+        kind: "Council" as const,
+        label: LGD_DISPLAY[r.lad_code],
+        detail: fmtPct1(r.total_pct),
+        code: r.lad_code,
+      })),
+      ...postcodeAreas.map((r) => ({
+        kind: "Postcode area" as const,
+        label: `${r.postcode_area} · ${r.place}`,
+        detail: fmtPct1(r.total_pct),
+      })),
+      ...postcodeSectors.map((r) => ({
+        kind: "Postcode sector" as const,
+        label: `${r.postcode_sector} · ${r.place}`,
+        detail: fmtPct1(r.total_pct),
+      })),
+    ],
+    [],
+  );
+}
+
+export function Header() {
+  const { mode } = useAppState();
+  const dispatch = useAppDispatch();
+  const index = useSearchIndex();
+  const [q, setQ] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const hits = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (needle.length < 2) return [];
+    return index.filter((h) => h.label.toLowerCase().includes(needle)).slice(0, 9);
+  }, [q, index]);
+
+  const choose = (h: SearchHit) => {
+    setQ("");
+    if (h.code) {
+      if (mode === "understand" || mode === "compare") dispatch({ type: "mode", mode: "explore" });
+      dispatch({ type: "select", code: h.code });
+    }
+  };
+
+  return (
+    <header className="app-header">
+      <div className="wordmark">
+        <img src={`${import.meta.env.BASE_URL}leaf.svg`} alt="" />
+        <div>
+          <div className="wordmark-title">
+            Greenspace <em>Access</em> NI
+          </div>
+          <div className="wordmark-sub">{APP_SUBTITLE}</div>
+        </div>
+      </div>
+
+      <nav className="mode-nav" aria-label="Application modes">
+        {MODES.map((m) => (
+          <button
+            key={m.id}
+            className={m.signature ? "signature" : undefined}
+            aria-current={mode === m.id}
+            onClick={() => dispatch({ type: "mode", mode: m.id })}
+          >
+            {m.label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="header-tools">
+        <div className="geo-search">
+          <svg className="magnifier" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            ref={inputRef}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setQ("");
+              if (e.key === "Enter" && hits[0]) choose(hits[0]);
+            }}
+            placeholder="Find a council or postcode…"
+            aria-label="Search councils and postcode geographies"
+          />
+          {hits.length > 0 && (
+            <div className="geo-search-results glass-strong" role="listbox">
+              {hits.map((h) => (
+                <button key={`${h.kind}${h.label}`} onClick={() => choose(h)} role="option" aria-selected="false">
+                  <span>
+                    {h.label}
+                    <span className="kind"> · {h.kind}</span>
+                  </span>
+                  <span className="kind">{h.detail}</span>
+                </button>
+              ))}
+              <p className="legend-note" style={{ padding: "4px 10px" }}>
+                Postcode geographies are reported without boundaries — see COMPARE for their results.
+              </p>
+            </div>
+          )}
+        </div>
+        <button
+          className="icon-btn"
+          title="Data & methodology"
+          aria-label="Data and methodology"
+          onClick={() => dispatch({ type: "methodology", open: true })}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 16v-5M12 8h.01" />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+        </button>
+        <button
+          className="icon-btn"
+          title={`About ${APP_NAME}`}
+          aria-label="Help and about"
+          onClick={() => dispatch({ type: "info", open: true })}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9.3 9a2.8 2.8 0 1 1 3.9 2.6c-.8.35-1.2 1-1.2 1.9v.3M12 17.5h.01" />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+        </button>
+      </div>
+    </header>
+  );
+}

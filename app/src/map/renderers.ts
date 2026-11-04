@@ -1,0 +1,53 @@
+import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer";
+import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
+import type { FormatId, MetricId } from "../data";
+import {
+  divRamp,
+  indexBreaks,
+  indexClassLabels,
+  pctBreaks,
+  pctClassLabels,
+  seqRamp,
+} from "../config/branding";
+
+export const metricField = (metric: MetricId, format: FormatId): string => {
+  if (metric === "total") return format === "pct" ? "total_pct" : "total_index";
+  return { access_to: "idx_at", access_within: "idx_aw", quality: "idx_q", benefits: "idx_b" }[
+    metric
+  ];
+};
+
+const fill = (color: string) =>
+  new SimpleFillSymbol({
+    color,
+    outline: { color: "rgba(8, 29, 40, 0.9)", width: 1.1 },
+  });
+
+/**
+ * Defined (manual) class breaks — identical across geographies/views so maps
+ * stay comparable (classification is an analytical choice, stated in the
+ * legend and methodology panel; Jenks would not be comparable across themes).
+ */
+export function buildRenderer(metric: MetricId, format: FormatId): ClassBreaksRenderer {
+  const useIndex = metric !== "total" || format === "index";
+  const breaks = useIndex ? indexBreaks : pctBreaks;
+  const ramp = useIndex ? divRamp : seqRamp;
+  const labels = useIndex ? indexClassLabels : pctClassLabels;
+  const edges = [-Infinity, ...breaks, Infinity];
+  return new ClassBreaksRenderer({
+    field: metricField(metric, format),
+    classBreakInfos: ramp.map((color, i) => ({
+      minValue: edges[i] === -Infinity ? -9999 : edges[i],
+      maxValue: edges[i + 1] === Infinity ? 9999 : edges[i + 1] - 0.000001,
+      symbol: fill(color),
+      label: labels[i],
+    })),
+  });
+}
+
+export function legendEntries(metric: MetricId, format: FormatId) {
+  const useIndex = metric !== "total" || format === "index";
+  const ramp = useIndex ? divRamp : seqRamp;
+  const labels = useIndex ? indexClassLabels : pctClassLabels;
+  return ramp.map((color, i) => ({ color, label: labels[i] }));
+}

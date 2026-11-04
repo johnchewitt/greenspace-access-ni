@@ -1,0 +1,9 @@
+node_modules/
+app/dist/
+app/node_modules/
+*.log
+.DS_Store
+source/unpacked/
+source/slide-*.jpg
+source/report.pdf
+source/

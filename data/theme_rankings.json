@@ -1,0 +1,210 @@
+{
+  "access_to": [
+    {
+      "rank": 1,
+      "code": "BT9",
+      "place": "South Belfast"
+    },
+    {
+      "rank": 2,
+      "code": "BT20",
+      "place": "Bangor"
+    },
+    {
+      "rank": 3,
+      "code": "BT37",
+      "place": "Whiteabbey / Jordanstown"
+    },
+    {
+      "rank": 4,
+      "code": "BT15",
+      "place": "North Belfast"
+    },
+    {
+      "rank": 5,
+      "code": "BT16",
+      "place": "Dundonald"
+    },
+    {
+      "rank": 6,
+      "code": "BT67",
+      "place": "Moira"
+    },
+    {
+      "rank": 7,
+      "code": "BT4",
+      "place": "East Belfast"
+    },
+    {
+      "rank": 8,
+      "code": "BT14",
+      "place": "North Belfast"
+    },
+    {
+      "rank": 9,
+      "code": "BT6",
+      "place": "South Belfast"
+    },
+    {
+      "rank": 10,
+      "code": "BT27",
+      "place": "Lisburn"
+    }
+  ],
+  "access_within": [
+    {
+      "rank": 1,
+      "code": "BT20",
+      "place": "Bangor"
+    },
+    {
+      "rank": 2,
+      "code": "BT60",
+      "place": "Armagh"
+    },
+    {
+      "rank": 3,
+      "code": "BT1",
+      "place": "Belfast City Centre"
+    },
+    {
+      "rank": 4,
+      "code": "BT9",
+      "place": "South Belfast"
+    },
+    {
+      "rank": 5,
+      "code": "BT5",
+      "place": "East Belfast"
+    },
+    {
+      "rank": 6,
+      "code": "BT41",
+      "place": "Antrim"
+    },
+    {
+      "rank": 7,
+      "code": "BT39",
+      "place": "Ballyclare"
+    },
+    {
+      "rank": 8,
+      "code": "BT27",
+      "place": "Lisburn"
+    },
+    {
+      "rank": 9,
+      "code": "BT67",
+      "place": "Moira"
+    },
+    {
+      "rank": 10,
+      "code": "BT30",
+      "place": "Downpatrick"
+    }
+  ],
+  "quality": [
+    {
+      "rank": 1,
+      "code": "BT20",
+      "place": "Bangor"
+    },
+    {
+      "rank": 2,
+      "code": "BT39",
+      "place": "Ballyclare"
+    },
+    {
+      "rank": 3,
+      "code": "BT41",
+      "place": "Antrim"
+    },
+    {
+      "rank": 4,
+      "code": "BT67",
+      "place": "Moira"
+    },
+    {
+      "rank": 5,
+      "code": "BT9",
+      "place": "South Belfast"
+    },
+    {
+      "rank": 6,
+      "code": "BT4",
+      "place": "East Belfast"
+    },
+    {
+      "rank": 7,
+      "code": "BT1",
+      "place": "Belfast City Centre"
+    },
+    {
+      "rank": 8,
+      "code": "BT45",
+      "place": "Magherafelt"
+    },
+    {
+      "rank": 9,
+      "code": "BT60",
+      "place": "Armagh"
+    },
+    {
+      "rank": 10,
+      "code": "BT71",
+      "place": "Dungannon"
+    }
+  ],
+  "benefits": [
+    {
+      "rank": 1,
+      "code": "BT20",
+      "place": "Bangor"
+    },
+    {
+      "rank": 2,
+      "code": "BT4",
+      "place": "East Belfast"
+    },
+    {
+      "rank": 3,
+      "code": "BT8",
+      "place": "South Belfast"
+    },
+    {
+      "rank": 4,
+      "code": "BT9",
+      "place": "South Belfast"
+    },
+    {
+      "rank": 5,
+      "code": "BT60",
+      "place": "Armagh"
+    },
+    {
+      "rank": 6,
+      "code": "BT63",
+      "place": "Portadown"
+    },
+    {
+      "rank": 7,
+      "code": "BT71",
+      "place": "Dungannon"
+    },
+    {
+      "rank": 8,
+      "code": "BT43",
+      "place": "Ballymena"
+    },
+    {
+      "rank": 9,
+      "code": "BT1",
+      "place": "Belfast City Centre"
+    },
+    {
+      "rank": 10,
+      "code": "BT44",
+      "place": "Ballymoney / Glens"
+    }
+  ]
+}

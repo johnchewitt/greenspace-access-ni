@@ -1,0 +1,12 @@
+report_name,lad_code,total_pct,total_index,access_to_index,access_within_index,quality_index,benefits_index
+Belfast City,N09000003,79.65,103.374,109,102,102,100
+Lisburn City & Castlereagh,N09000007,79.07,102.431,105,103,101,101
+Antrim & Newtonabbey,N09000001,78.99,102.207,102,103,103,101
+North Down & Ards,N09000011,78.69,101.904,104,101,101,101
+"Newry City, Mourne & Down",N09000010,77.17,99.687,97,101,100,101
+"Armagh City, Banbridge & Craigavon",N09000002,76.05,98.016,91,99,101,101
+Derry City & Strabane,N09000005,75.54,97.628,96,97,97,100
+Mid-Ulster,N09000009,75.5,97.199,88,99,101,100
+Mid & East Antrim,N09000008,74.17,95.948,96,96,94,97
+Causeway Coast & Glens,N09000004,74.13,95.907,96,95,96,97
+Fermanagh & Omagh,N09000006,73.23,94.179,84,98,97,98

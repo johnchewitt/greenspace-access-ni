@@ -1,0 +1,107 @@
+{
+  "q14": {
+    "question": "Q14. How much do you agree or disagree with the following statements relating to your nearest greenspace areas?",
+    "greenspace_definition": "Places like off-road trails, parks, the coast, woodlands, rivers and other natural places you could spend time in taking part in outdoor activities such as walking",
+    "scoring": {
+      "Agree strongly": 5,
+      "Agree slightly": 4,
+      "Neither agree nor disagree / Don't know": 3,
+      "Disagree slightly": 2,
+      "Disagree strongly": 1
+    },
+    "response_distributions": {
+      "benefit my mental health and encourage physical activity like walking or cycling": {
+        "agree_strongly": 0.488534,
+        "agree_slightly": 0.315132,
+        "neither_nor": 0.115139,
+        "disagree_slightly": 0.026766,
+        "disagree_strongly": 0.012445,
+        "dont_know": 0.041984
+      },
+      "are easy to navigate, with clear paths and signage": {
+        "agree_strongly": 0.400533,
+        "agree_slightly": 0.379671,
+        "neither_nor": 0.112569,
+        "disagree_slightly": 0.040458,
+        "disagree_strongly": 0.020409,
+        "dont_know": 0.046361
+      },
+      "are safe and welcoming": {
+        "agree_strongly": 0.39763,
+        "agree_slightly": 0.372943,
+        "neither_nor": 0.127227,
+        "disagree_slightly": 0.046961,
+        "disagree_strongly": 0.012317,
+        "dont_know": 0.042923
+      },
+      "are rich in nature and wildlife, allowing me to connect with the environment": {
+        "agree_strongly": 0.37754,
+        "agree_slightly": 0.370962,
+        "neither_nor": 0.132248,
+        "disagree_slightly": 0.051539,
+        "disagree_strongly": 0.018093,
+        "dont_know": 0.049619
+      },
+      "improve my sense of community and make my area a better place to live": {
+        "agree_strongly": 0.357244,
+        "agree_slightly": 0.365229,
+        "neither_nor": 0.184754,
+        "disagree_slightly": 0.034383,
+        "disagree_strongly": 0.015644,
+        "dont_know": 0.042746
+      },
+      "feel well cared for": {
+        "agree_strongly": 0.352891,
+        "agree_slightly": 0.398592,
+        "neither_nor": 0.108564,
+        "disagree_slightly": 0.063661,
+        "disagree_strongly": 0.033153,
+        "dont_know": 0.043139
+      },
+      "are inclusive for people of all abilities": {
+        "agree_strongly": 0.350898,
+        "agree_slightly": 0.36201,
+        "neither_nor": 0.130509,
+        "disagree_slightly": 0.068121,
+        "disagree_strongly": 0.029826,
+        "dont_know": 0.058636
+      },
+      "are easy to get to without a car": {
+        "agree_strongly": 0.300733,
+        "agree_slightly": 0.28336,
+        "neither_nor": 0.124378,
+        "disagree_slightly": 0.147659,
+        "disagree_strongly": 0.122305,
+        "dont_know": 0.021565
+      },
+      "provide the amenities and facilities I need, such as seating, bins, or toilets": {
+        "agree_strongly": 0.282187,
+        "agree_slightly": 0.35185,
+        "neither_nor": 0.140152,
+        "disagree_slightly": 0.107115,
+        "disagree_strongly": 0.07534,
+        "dont_know": 0.043356
+      }
+    }
+  },
+  "q15": {
+    "question": "Q15. How long does it take you to walk to your nearest local greenspace?",
+    "greenspace_definition": "Places like parks, playing fields, paths, trails and natural places you could spend time in taking part in outdoor activities such as walking",
+    "scoring": {
+      "5 minute walk or less": 5,
+      "Within a 6-10 minute walk": 4,
+      "Within an 11-20 minute walk": 3,
+      "Within a 21-30 minute walk": 2,
+      "More than a 30 minute walk / Don't know": 1
+    },
+    "response_distribution_2025": {
+      "5 minute walk or less": 0.17,
+      "Within a 6-10 minute walk": 0.22,
+      "Within an 11-20 minute walk": 0.22,
+      "Within a 21-30 minute walk": 0.13,
+      "More than a 30 minute walk": 0.2,
+      "Don't know": 0.05
+    }
+  },
+  "excluded_inputs_rationale": "Other POMNI attitudinal/behavioural variables were considered but excluded: responses judged more likely to reflect individual behaviours, preferences and personal circumstances rather than local greenspace provision."
+}

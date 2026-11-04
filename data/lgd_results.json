@@ -1,0 +1,134 @@
+[
+  {
+    "report_name": "Belfast City",
+    "lad_code": "N09000003",
+    "total_pct": 79.65,
+    "total_index": 103.374,
+    "themes_index": {
+      "access_to": 109,
+      "access_within": 102,
+      "quality": 102,
+      "benefits": 100
+    }
+  },
+  {
+    "report_name": "Lisburn City & Castlereagh",
+    "lad_code": "N09000007",
+    "total_pct": 79.07,
+    "total_index": 102.431,
+    "themes_index": {
+      "access_to": 105,
+      "access_within": 103,
+      "quality": 101,
+      "benefits": 101
+    }
+  },
+  {
+    "report_name": "Antrim & Newtonabbey",
+    "lad_code": "N09000001",
+    "total_pct": 78.99,
+    "total_index": 102.207,
+    "themes_index": {
+      "access_to": 102,
+      "access_within": 103,
+      "quality": 103,
+      "benefits": 101
+    }
+  },
+  {
+    "report_name": "North Down & Ards",
+    "lad_code": "N09000011",
+    "total_pct": 78.69,
+    "total_index": 101.904,
+    "themes_index": {
+      "access_to": 104,
+      "access_within": 101,
+      "quality": 101,
+      "benefits": 101
+    }
+  },
+  {
+    "report_name": "Newry City, Mourne & Down",
+    "lad_code": "N09000010",
+    "total_pct": 77.17,
+    "total_index": 99.687,
+    "themes_index": {
+      "access_to": 97,
+      "access_within": 101,
+      "quality": 100,
+      "benefits": 101
+    }
+  },
+  {
+    "report_name": "Armagh City, Banbridge & Craigavon",
+    "lad_code": "N09000002",
+    "total_pct": 76.05,
+    "total_index": 98.016,
+    "themes_index": {
+      "access_to": 91,
+      "access_within": 99,
+      "quality": 101,
+      "benefits": 101
+    }
+  },
+  {
+    "report_name": "Derry City & Strabane",
+    "lad_code": "N09000005",
+    "total_pct": 75.54,
+    "total_index": 97.628,
+    "themes_index": {
+      "access_to": 96,
+      "access_within": 97,
+      "quality": 97,
+      "benefits": 100
+    }
+  },
+  {
+    "report_name": "Mid-Ulster",
+    "lad_code": "N09000009",
+    "total_pct": 75.5,
+    "total_index": 97.199,
+    "themes_index": {
+      "access_to": 88,
+      "access_within": 99,
+      "quality": 101,
+      "benefits": 100
+    }
+  },
+  {
+    "report_name": "Mid & East Antrim",
+    "lad_code": "N09000008",
+    "total_pct": 74.17,
+    "total_index": 95.948,
+    "themes_index": {
+      "access_to": 96,
+      "access_within": 96,
+      "quality": 94,
+      "benefits": 97
+    }
+  },
+  {
+    "report_name": "Causeway Coast & Glens",
+    "lad_code": "N09000004",
+    "total_pct": 74.13,
+    "total_index": 95.907,
+    "themes_index": {
+      "access_to": 96,
+      "access_within": 95,
+      "quality": 96,
+      "benefits": 97
+    }
+  },
+  {
+    "report_name": "Fermanagh & Omagh",
+    "lad_code": "N09000006",
+    "total_pct": 73.23,
+    "total_index": 94.179,
+    "themes_index": {
+      "access_to": 84,
+      "access_within": 98,
+      "quality": 97,
+      "benefits": 98
+    }
+  }
+]
