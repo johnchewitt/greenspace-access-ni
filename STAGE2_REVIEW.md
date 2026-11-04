@@ -45,6 +45,24 @@ All fixes implemented, tested and deployed; nothing rebuilt, no new runtime depe
 - Licence-year TBC (2024 vs 2026) still awaits Outscape confirmation (tracked in ROADMAP).
 - The provision service's 2026 vintage is used and labelled; whether Outscape prefers the 2025 vintage shown for the demo narrative is a one-line config choice — ask at the demo.
 
+## Stage 3 live review (4 Nov 2026, evening — in-browser on the production URL)
+
+First review conducted in a real online browser against the deployed app. Confirmed
+working live: dark backdrop + choropleth + labels; greenspace sites drawing over the
+index fills (the earlier draw-order fix); Belfast selection; PvP split with full OSM
+basemap, live access points/greenspace, council indicators (72.7/99.8/100.0%, "2026
+vintage"); Compare postcode-areas view; interactive scorer recalculating correctly
+(72.5% check); tablet layout; zero console errors throughout.
+
+| Severity | Finding | Fix |
+|---|---|---|
+| **High (live bug)** | The SDZ surface rendered nothing despite layer/filter/order all correct — isolated by live in-page experiments to the constructed `ClassBreaksRenderer` instance silently failing on a FeatureLayer in SDK 5.1.27 (the identical autocast object draws; the GeoJSON choropleth's constructed renderer is unaffected) | `buildSdzRenderer` now returns the autocast properties object; verified painting across NI on the production URL after deploy |
+| Low (UX) | "Preparing map…" chip cleared on view-ready, seconds before the choropleth's first paint (client tessellation + service latency; one ORNI SDZ tile took 15.8 s) | Chip now holds until the boundary layer-view finishes its first update |
+
+Perf note: app shell itself is fast (DCL ~450 ms cached); visible wait is dominated by
+ArcGIS service responses and first tessellation — service-side, mitigated by the
+loading chip and per-layer status chips.
+
 ## Readiness
 
 **Ready for Stage 3.** The codebase now has a full quality gate (types, lint, tests, build) in CI, the live defect class that slipped past offline QA (draw order) is covered by a programmatic layer-stack check, and data-integrity handling of the multi-vintage provision service is explicit and tested.

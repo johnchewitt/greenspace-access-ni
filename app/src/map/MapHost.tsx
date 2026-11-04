@@ -24,7 +24,9 @@ export function MapHost({ controller, label, hidden, children }: Props) {
     const onReady = () => {
       if (el.view && !controller.view) {
         controller.attach(el.view);
-        setReady(true);
+        // Hold the loading chip until the boundary layer has actually painted
+        // (first paint can take several seconds; view-ready is too early).
+        controller.whenFirstPaint().finally(() => setReady(true));
       }
     };
     el.addEventListener("arcgisViewReadyChange", onReady);

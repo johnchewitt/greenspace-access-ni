@@ -1,4 +1,5 @@
 import esriConfig from "@arcgis/core/config";
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
 import EsriMap from "@arcgis/core/Map";
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
@@ -220,6 +221,17 @@ export class MapController {
         this.onHover?.(code, e.x, e.y);
       });
     });
+  }
+
+  /** Resolves when the boundary layer has drawn for the first time. */
+  async whenFirstPaint(): Promise<void> {
+    const view = this.view;
+    if (!view) return;
+    await view.when();
+    const lv = await view.whenLayerView(this.lgdLayer).catch(() => null);
+    if (lv) {
+      await reactiveUtils.whenOnce(() => lv.updating === false);
+    }
   }
 
   setRenderer(metric: MetricId, format: FormatId) {
