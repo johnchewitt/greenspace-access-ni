@@ -14,10 +14,15 @@ import { useAppDispatch, useAppState } from "../../state/AppState";
 import { Chart } from "../../charts/Chart";
 import { areaRadarOption, councilRankOption } from "../../charts/options";
 import { FormatToggle } from "../../components/shared";
+import { PostcodeCompare, ThemeLeaders } from "./PostcodeCompare";
+import { useState } from "react";
+
+type Geo = "councils" | "areas" | "sectors";
 
 export function CompareOverlay() {
   const { metric, format, selectedCode } = useAppState();
   const dispatch = useAppDispatch();
+  const [geo, setGeo] = useState<Geo>("councils");
 
   const rankOption = useMemo(
     () => councilRankOption(metric, format, selectedCode),
@@ -43,13 +48,48 @@ export function CompareOverlay() {
   return (
     <div className="overlay-stage" role="region" aria-label="Council comparison">
       <div className="overlay-inner">
-        <p className="section-label">Compare · 11 local authorities</p>
-        <h1 className="overlay-hero">Modest differences between councils — with accessibility varying most</h1>
+        <p className="section-label">Compare</p>
+        <h1 className="overlay-hero">
+          {geo === "councils"
+            ? "Modest differences between councils — with accessibility varying most"
+            : "Postcode geographies vary far more than councils"}
+        </h1>
         <p className="overlay-lede">
-          Every council scores between 73% and 80% of the maximum. {integrity.significance};{" "}
-          {integrity.lgdSamples.toLowerCase()}.
+          {geo === "councils" ? (
+            <>
+              Every council scores between 73% and 80% of the maximum. {integrity.significance};{" "}
+              {integrity.lgdSamples.toLowerCase()}.
+            </>
+          ) : (
+            <>
+              Published totals span roughly 71–87% of the maximum across postcode geographies —
+              where the index starts to identify local strengths and priority areas. Survey
+              perceptions, {integrity.threshold.toLowerCase()}.
+            </>
+          )}
         </p>
 
+        <div className="format-toggle" style={{ width: 380, marginBottom: 14 }} role="group" aria-label="Comparison geography">
+          {([
+            ["councils", "Councils (11)"],
+            ["areas", "Postcode areas (48)"],
+            ["sectors", "Sectors (23)"],
+          ] as const).map(([id, label]) => (
+            <button key={id} aria-pressed={geo === id} onClick={() => setGeo(id)}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {geo === "areas" && (
+          <>
+            <PostcodeCompare kind="areas" />
+            <ThemeLeaders />
+          </>
+        )}
+        {geo === "sectors" && <PostcodeCompare kind="sectors" />}
+
+        {geo === "councils" && (
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.5fr) minmax(0,1fr)", gap: 14, alignItems: "start" }}>
           <section className="prose-block glass">
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
@@ -125,6 +165,7 @@ export function CompareOverlay() {
             </button>
           </section>
         </div>
+        )}
       </div>
     </div>
   );

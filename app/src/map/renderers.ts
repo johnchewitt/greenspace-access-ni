@@ -45,6 +45,27 @@ export function buildRenderer(metric: MetricId, format: FormatId): ClassBreaksRe
   });
 }
 
+/** % of households within 400 m of greenspace/trails — blue sequential, 0–100. */
+export const sdzRamp = ["#17303F", "#1E4A66", "#2A6A92", "#3E93C4", "#7FAEF5"];
+export const sdzBreaks = [20, 40, 60, 80];
+export const sdzLabels = ["Under 20%", "20–40%", "40–60%", "60–80%", "80% and above"];
+
+export function buildSdzRenderer(): ClassBreaksRenderer {
+  const edges = [-1, ...sdzBreaks, 101];
+  return new ClassBreaksRenderer({
+    field: "Percent400",
+    classBreakInfos: sdzRamp.map((color, i) => ({
+      minValue: edges[i] === -1 ? -1 : edges[i],
+      maxValue: edges[i + 1] === 101 ? 101 : edges[i + 1] - 0.000001,
+      symbol: new SimpleFillSymbol({
+        color,
+        outline: { color: "rgba(8, 29, 40, 0.5)", width: 0.3 },
+      }),
+      label: sdzLabels[i],
+    })),
+  });
+}
+
 export function legendEntries(metric: MetricId, format: FormatId) {
   const useIndex = metric !== "total" || format === "index";
   const ramp = useIndex ? divRamp : seqRamp;

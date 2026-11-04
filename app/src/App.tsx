@@ -27,7 +27,7 @@ const LAYER_IDS: LayerId[] = ["greenspace", "trails", "accessPoints", "bluespace
 export default function App() {
   const state = useAppState();
   const dispatch = useAppDispatch();
-  const { mode, metric, format, selectedCode, layers, basemap, pvpOpened } = state;
+  const { mode, metric, format, selectedCode, layers, basemap, sdzOn, pvpOpened } = state;
 
   // dispatch from useReducer is stable, so both controllers are created once.
   const mainCtl = useMemo(
@@ -92,6 +92,10 @@ export default function App() {
   useEffect(() => {
     mainCtl.setBasemap(basemap);
   }, [basemap, mainCtl]);
+
+  useEffect(() => {
+    if (pvpOpened) rightCtl.setSdz(sdzOn && mode === "pvp");
+  }, [sdzOn, mode, pvpOpened, rightCtl]);
 
   useViewSync(mainCtl, rightCtl, mode === "pvp");
 

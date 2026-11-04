@@ -38,11 +38,23 @@ experiences shipped in one stage:
   works with every external service unreachable.
 - Verification: STAGE2_VERIFICATION.md (section-13 checklist, all checks executed).
 
-## Stage 3 — Depth & feedback round (proposed, rescoped)
+## Stage 3 — Depth round ✅ (delivered 4 Nov 2026, pre-demo at client request)
 
-- Post-demo feedback incorporation; postcode-level chart-first views (areas/sectors)
-  with anti-league-table framing; theme top-ten rankings view; worked scoring example;
-  SDZ/SOA provision context in PvP; optional licensed postcode boundaries decision.
+- COMPARE geography tabs: all 48 postcode areas and 23 sectors as chart-first views
+  (no open-licence NI postcode boundaries exist) — bars coloured by the defined class
+  bands, sample sizes and ±8–18pp MoE in tooltips, explicit bands-not-league-table
+  framing.
+- Theme leaders: the report's four published top-ten rankings reproduced exactly.
+- UNDERSTAND: interactive "try the scoring method" explainer — the published method
+  applied live to a hypothetical response set, labelled illustrative (methodology
+  verified by unit tests; the report's own slide-6 example row is internally
+  inconsistent and is noted rather than reproduced).
+- PERCEPTION VS PROVISION: toggleable SDZ household-proximity surface (live-verified
+  service; 3,399 rows = ~850 SDZs × 4 vintages, filtered to the 2026 vintage and
+  labelled) with in-panel legend.
+- Quality gate: 25 tests, lint, typecheck, build, headless QA — all green.
+- Deferred to post-demo feedback: Outscape's vintage preference, postcode boundary
+  licensing decision, SOA/settlement surfaces, any demo-driven changes.
 
 ## Stage 4 — Polish, verification & demo delivery (proposed)
 

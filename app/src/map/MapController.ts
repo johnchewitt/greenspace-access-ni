@@ -20,11 +20,12 @@ import type Geometry from "@arcgis/core/geometry/Geometry";
 
 
 import type { FormatId, MetricId } from "../data";
-import { buildRenderer } from "./renderers";
+import { buildRenderer, buildSdzRenderer } from "./renderers";
 import {
   localData,
   osmVectorBasemapItemId,
   outscapeLayers,
+  sdzProvision,
   type RemoteLayerConfig,
 } from "../config/services";
 import { palette } from "../config/branding";
@@ -120,6 +121,7 @@ export class MapController {
   selectionLayer = new GraphicsLayer({ listMode: "hide" });
   remote: Record<LayerId, FeatureLayer>;
   basemapLayer: VectorTileLayer | null = null;
+  sdzLayer: FeatureLayer | null = null;
   private geometriesByCode = new globalThis.Map<string, Geometry>();
   private hoverCode: string | null = null;
   onSelect: ((code: string | null) => void) | null = null;
@@ -304,6 +306,29 @@ export class MapController {
 
   setChoroplethVisible(on: boolean) {
     this.lgdLayer.visible = on;
+  }
+
+  /**
+   * Published SDZ household-proximity surface (provision map). Lazily created;
+   * drawn above the backdrop and below the council outlines.
+   */
+  setSdz(on: boolean) {
+    const view = this.view;
+    if (!view) return;
+    if (on && !this.sdzLayer) {
+      this.sdzLayer = new FeatureLayer({
+        url: sdzProvision.url,
+        title: sdzProvision.title,
+        definitionExpression: sdzProvision.definitionExpression,
+        outFields: ["SDZ_Name", "Percent400", "Percent1km", "Percent2km", "Year_"],
+        popupEnabled: false,
+        renderer: buildSdzRenderer(),
+        opacity: 0.8,
+      });
+      watchLayerStatus(this.sdzLayer, "sdz", this.onStatus);
+      view.map?.layers.add(this.sdzLayer, view.map.layers.indexOf(this.lgdLayer));
+    }
+    if (this.sdzLayer) this.sdzLayer.visible = on;
   }
 
   /** Reference mode for the provision map: council outlines only, no fills. */

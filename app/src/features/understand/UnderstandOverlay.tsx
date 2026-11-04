@@ -10,6 +10,7 @@ import {
 } from "../../data";
 import { themeSeries } from "../../config/branding";
 import { Chart } from "../../charts/Chart";
+import { ScoreExplainer } from "./ScoreExplainer";
 import {
   classificationGroups,
   groupIndexOption,
@@ -111,6 +112,8 @@ export function UnderstandOverlay() {
             </table>
           </div>
         </section>
+
+        <ScoreExplainer />
 
         <section className="prose-block glass">
           <h3>What residents actually said</h3>

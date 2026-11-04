@@ -49,6 +49,20 @@ export const outscapeLayers: Record<string, RemoteLayerConfig> = {
   },
 };
 
+/**
+ * Published objective provision indicators, Super Data Zone level.
+ * 3,399 rows = ~850 SDZs x 4 analysis vintages (Year_ 2023-2026, verified by
+ * live distinct-values query) — always filter to one vintage.
+ */
+export const sdzProvision: RemoteLayerConfig = {
+  id: "sdzProvision",
+  title: "Neighbourhood provision (Super Data Zones)",
+  url: `${ORNI}/GreenspaceNI_SDZ_Analysis2025/FeatureServer/0`,
+  definitionExpression: "Year_ = '2026'",
+  verified: "2026-11-04",
+  note: "% of households within 400 m / 1 km / 2 km of greenspace or trails, per SDZ; 2026 analysis vintage",
+};
+
 /** Published objective provision indicators, council level, 2025 vintage. */
 export const councilProvision2025: RemoteLayerConfig = {
   id: "councilProvision2025",

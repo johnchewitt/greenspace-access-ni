@@ -25,6 +25,7 @@ export interface AppState {
   rightOpen: boolean;
   layers: Record<LayerId, boolean>;
   basemap: BasemapStyle;
+  sdzOn: boolean;
   serviceStatus: Record<string, ServiceState>;
   infoOpen: boolean;
   methodologyOpen: boolean;
@@ -38,6 +39,7 @@ export type Action =
   | { type: "panel"; side: "left" | "right"; open: boolean }
   | { type: "layer"; layer: LayerId; on: boolean }
   | { type: "basemap"; style: BasemapStyle }
+  | { type: "sdz"; on: boolean }
   | { type: "service"; id: string; state: ServiceState }
   | { type: "info"; open: boolean }
   | { type: "methodology"; open: boolean };
@@ -52,6 +54,7 @@ export const initialState: AppState = {
   rightOpen: true,
   layers: { greenspace: false, trails: false, accessPoints: false, bluespace: false },
   basemap: "dark",
+  sdzOn: false,
   serviceStatus: {},
   infoOpen: false,
   methodologyOpen: false,
@@ -87,6 +90,8 @@ export function reducer(state: AppState, a: Action): AppState {
       return { ...state, layers: { ...state.layers, [a.layer]: a.on } };
     case "basemap":
       return { ...state, basemap: a.style };
+    case "sdz":
+      return { ...state, sdzOn: a.on };
     case "service":
       return { ...state, serviceStatus: { ...state.serviceStatus, [a.id]: a.state } };
     case "info":

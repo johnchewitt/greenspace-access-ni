@@ -24,11 +24,12 @@ echarts.use([
 interface Props {
   option: EChartsCoreOption;
   className?: string;
+  style?: React.CSSProperties;
   onEvents?: Record<string, (params: unknown) => void>;
   ariaLabel?: string;
 }
 
-export function Chart({ option, className, onEvents, ariaLabel }: Props) {
+export function Chart({ option, className, style, onEvents, ariaLabel }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ECharts | null>(null);
 
@@ -57,5 +58,5 @@ export function Chart({ option, className, onEvents, ariaLabel }: Props) {
     return () => entries.forEach(([evt, cb]) => chart.off(evt, cb));
   }, [onEvents]);
 
-  return <div ref={ref} className={className} role="img" aria-label={ariaLabel} />;
+  return <div ref={ref} className={className} style={style} role="img" aria-label={ariaLabel} />;
 }

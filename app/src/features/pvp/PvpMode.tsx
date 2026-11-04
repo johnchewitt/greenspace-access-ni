@@ -16,9 +16,10 @@ import {
   type ProvisionAttrs,
   type ProvisionRecord,
 } from "./provision";
-import { councilProvision2025, outscapeLayers } from "../../config/services";
-import { useAppState } from "../../state/AppState";
-import { SampleSizeBadge } from "../../components/shared";
+import { councilProvision2025, outscapeLayers, sdzProvision } from "../../config/services";
+import { useAppDispatch, useAppState } from "../../state/AppState";
+import { SampleSizeBadge, Switch } from "../../components/shared";
+import { sdzLabels, sdzRamp } from "../../map/renderers";
 
 type ProvisionState =
   | { status: "loading" }
@@ -114,7 +115,8 @@ export function PerceptionPanel() {
 }
 
 export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
-  const { selectedCode, serviceStatus } = useAppState();
+  const { selectedCode, serviceStatus, sdzOn } = useAppState();
+  const dispatch = useAppDispatch();
   const rec =
     provision.status === "ok" && selectedCode ? provision.byCode[selectedCode] : null;
 
@@ -176,6 +178,38 @@ export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
           </span>
         </div>
       ))}
+
+      <div className="layer-row" style={{ marginTop: 10 }}>
+        <Switch
+          checked={sdzOn}
+          onChange={(on) => dispatch({ type: "sdz", on })}
+          label="Neighbourhood provision surface (Super Data Zones)"
+        />
+        <span>Neighbourhood surface (SDZ)</span>
+        <span className={`status ${serviceStatus["right:sdz"] === "error" ? "err" : ""}`}>
+          {serviceStatus["right:sdz"] === "loading"
+            ? "loading…"
+            : serviceStatus["right:sdz"] === "error"
+              ? "offline"
+              : ""}
+        </span>
+      </div>
+      {sdzOn && (
+        <>
+          <div className="legend-swatches" style={{ marginTop: 6 }}>
+            {sdzRamp.map((c, i) => (
+              <div className="legend-row" key={c}>
+                <span className="sw" style={{ background: c }} />
+                <span>{sdzLabels[i]}</span>
+              </div>
+            ))}
+          </div>
+          <p className="legend-note">
+            Households within 400 m of greenspace or trails, per Super Data Zone —{" "}
+            {sdzProvision.note}.
+          </p>
+        </>
+      )}
 
       <div className="note-box">
         <b>Two different kinds of evidence.</b> Survey scores measure how residents{" "}
