@@ -163,8 +163,8 @@ export function Header() {
                 </button>
               ))}
               <p className="legend-note" style={{ padding: "4px 10px" }}>
-                Postcode results map as markers at reference points — no open-licence
-                boundaries exist.
+                Postcode results map with derived boundaries (from licence-cleared
+                unit-postcode locations) — indicative, not official.
               </p>
             </div>
           )}

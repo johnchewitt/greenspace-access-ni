@@ -38,8 +38,11 @@ first; ARCHITECTURE.md governs structure; GREESPACE_METHODOLOGY.md governs every
   exactly 11 matches.
 - Mirror existing Greenspace NI Map filters (greenspace `ShowOnMap='Yes'`; trails
   `Infrastructure='False'`; access points `ShowOnMap='Yes' AND Area_Ha>=2`).
-- No NI postcode polygons exist under open licence — do not draw approximate postcode
-  boundaries; postcode results are chart-first (DATA_SOURCES.md §3).
+- No official NI postcode polygons exist under open licence. The app's postcode
+  boundaries are DERIVED (Voronoi of licence-cleared NSPL unit-postcode locations,
+  dissolved and clipped; scripts/build_postcode_polygons.py) and must always be
+  labelled indicative/derived; never present them as official, and never draw any
+  other approximate boundary without the same provenance labelling.
 - Perception vs Provision mode: councils + NI only; separated panels; never a combined
   score or correlation claim.
 

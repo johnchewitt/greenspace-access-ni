@@ -23,17 +23,26 @@ what to click, what to say, and the caveat to keep handy. The app lands on **Ove
 Point at the four hero numbers: the published 77% overall and 65% access-to beside the
 live hectares and the live "% within a 400 m walk". Two kinds of evidence, one story.
 
-## 2 · Explore — the index on the map (2 min)
+## 2 · Explore — the index on the map (2–3 min)
 
 Click **Explore the map →**.
 
 - Switch theme **Overall → Access To**: the map's weak spot appears in the west.
 - Toggle **% of maximum ↔ Index (NI = 100)** — both are published formats.
 - Click **Belfast**: the profile panel shows 79.7%, index 103.4, and its theme chart.
+- **Geography switch — the new headline**: flip **Councils → Districts**: all 80 BT
+  districts appear as a true choropleth (48 with published results, the rest honestly
+  "not published, n < 30"). Click one for its profile; try **Sectors** too, or search
+  "BT4 2". Say: "the boundaries are derived from our licence-cleared unit-postcode
+  dataset — Voronoi, dissolved, clipped — and labelled indicative throughout."
 - Flick a Greenspace NI Map layer on (sites/trails) — "this is the estate you already
-  publish, consumed live, with status chips when a service is down."
+  publish, consumed live, with status chips when a service is down." Toggle
+  **Settlement limits (named)**: the statutory Area Plan development limits, with town
+  and village names appearing as you zoom.
+- The **Backdrop** switcher offers None / Dark / Grey / OSM, all from one keyless source.
 
-*Caveat:* "Differences between councils are descriptive — margins of error apply."
+*Caveat:* "Differences between areas are descriptive — margins of error apply,
+especially at sector level (n as low as ~30)."
 
 ## 3 · Perception vs Provision — the signature (3 min)
 
@@ -53,7 +62,8 @@ Click **PERCEPTION VS PROVISION** (Belfast still selected).
 
 - **ACCESSIBILITY**: the Super Data Zone surface with the 400 m / 1 km / 2 km switch.
   "The published network analysis — we compute no travel times of our own and never fake
-  it with circles."
+  it with circles." (The 2 km view notes it uses the 2025 vintage — 2 km wasn't computed
+  in the 2026 analysis; a good aside on data honesty.)
 - **INSIGHTS → Dashboard**: live totals (≈87,600 ha, 1,493 sites, 1,385 trails) and NI
   walking-access KPIs, vintage-labelled.
 - **INSIGHTS → Opportunities**: the transparent screen — flagged councils with every
@@ -72,9 +82,12 @@ Click **PERCEPTION VS PROVISION** (Belfast still selected).
 
 1. Licence year for the NIMA attribution — 2024 or 2026? (A "TBC" marker is held in the docs.)
 2. Preferred provision vintage — the app pins the latest (2026) and labels it; happy?
-3. Postcode boundaries: results are chart-first because no open-licence BT polygons
-   exist — license boundaries, or keep chart-first?
-4. Official brand assets: the app uses its own design language pending approved assets.
+3. Postcode boundaries — resolved: derived (indicative) boundaries now ship, built from
+   the licence-cleared unit-postcode dataset. Confirm Outscape is happy with the
+   "derived / indicative" labelling, and the exact attribution wording for that dataset.
+4. The SDZ-level 2 km indicator is absent from the 2026 analysis (0 of 849 rows) — is
+   that intentional, and will it return in the next vintage?
+5. Official brand assets: the app uses its own design language pending approved assets.
 
 ## If something goes wrong
 

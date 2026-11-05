@@ -63,9 +63,19 @@ const CONTEXT_SWATCHES: { id: "greenspace" | "trails" | "accessPoints" | "bluesp
 ];
 
 /** Custom map legend with units, classification statement and format context. */
-export function MapLegend({ metric, format }: { metric: MetricId; format: FormatId }) {
+export function MapLegend({
+  metric,
+  format,
+  showUnpublished = false,
+}: {
+  metric: MetricId;
+  format: FormatId;
+  showUnpublished?: boolean;
+}) {
   const { layers } = useAppState();
-  const entries = legendEntries(metric, format);
+  const entries = showUnpublished
+    ? [...legendEntries(metric, format), { color: "rgba(81, 98, 93, 0.35)", label: "Not published (n < 30)" }]
+    : legendEntries(metric, format);
   const isIndex = metric !== "total" || format === "index";
   const activeContext = CONTEXT_SWATCHES.filter((c) => layers[c.id]);
   return (

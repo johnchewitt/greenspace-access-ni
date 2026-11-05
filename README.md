@@ -78,6 +78,8 @@ methodology) for Outscape. Greenspace, trails, access points & provision analysi
 GreenspaceNI Map, Outdoor Recreation NI / Outscape, funded by DAERA & DfI — contains
 public sector information licensed under the Open Government Licence v3.0; © Crown
 copyright and database right Land & Property Services, NIMA MOU577.2 (licence year TBC —
-to be confirmed with Outscape). Council boundaries derived from OSNI Open Data (OGL v3).
+to be confirmed with Outscape). Council boundaries derived from OSNI Open Data (OGL v3); settlement development limits
+from the published statutory Area Plans (NI Planning open data); postcode boundaries
+derived from licence-cleared NSPL unit-postcode locations (indicative).
 Basemap © OpenStreetMap contributors, © Esri. Built with the ArcGIS Maps SDK for
 JavaScript.

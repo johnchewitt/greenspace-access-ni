@@ -31,8 +31,8 @@ const LAYERS: { id: LayerId; label: string }[] = [
 
 const GEOGRAPHIES: { id: Geography; label: string; hint: string }[] = [
   { id: "councils", label: "Councils", hint: "11 council areas (boundaries)" },
-  { id: "districts", label: "Districts", hint: "48 published BT postcode districts (markers)" },
-  { id: "sectors", label: "Sectors", hint: "23 published BT postcode sectors (markers)" },
+  { id: "districts", label: "Districts", hint: "BT postcode districts (derived boundaries)" },
+  { id: "sectors", label: "Sectors", hint: "BT postcode sectors (derived boundaries)" },
 ];
 
 export function LeftPanel() {
@@ -69,7 +69,7 @@ export function LeftPanel() {
           <p className="format-hint">
             {geography === "councils"
               ? "11 councils as boundaries."
-              : `Published ${geography === "districts" ? "48 postcode districts" : "23 postcode sectors"} as markers at postcode reference points — no open-licence NI postcode boundaries exist, so none are drawn.`}
+              : `${geography === "districts" ? "80 postcode districts (48 with published results)" : "Postcode sectors (23 with published results)"} — boundaries derived from licence-cleared unit-postcode locations; indicative, not official.`}
           </p>
         </section>
         <section className="panel-section glass">
@@ -164,7 +164,7 @@ export function LeftPanel() {
           </p>
         </section>
 
-        <MapLegend metric={metric} format={format} />
+        <MapLegend metric={metric} format={format} showUnpublished={geography !== "councils"} />
       </div>
     </>
   );
@@ -203,7 +203,28 @@ function PostcodePanel({ code }: { code: string }) {
   const district = postcodeAreas.find((r) => r.postcode_area === code);
   const sector = district ? undefined : postcodeSectors.find((r) => r.postcode_sector === code);
   const rec = district ?? sector;
-  if (!rec) return null;
+  if (!rec) {
+    return (
+      <div className={`panel-right ${rightOpen ? "" : "collapsed"}`}>
+        <section className="panel-section glass" aria-label={`${code} — not published`}>
+          <h2 className="section-label">{code.includes(" ") ? "Postcode sector" : "Postcode district"}</h2>
+          <h3 className="area-name">{code}</h3>
+          <p className="format-hint" style={{ marginTop: 8 }}>
+            No published result for this area: the interim report publishes postcode
+            results only where the sample reaches n ≥ 30. Its boundary is shown (derived,
+            indicative) so the geography stays complete.
+          </p>
+          <button
+            className="kpi-card"
+            style={{ width: "100%", marginTop: 8, textAlign: "center", minWidth: 0 }}
+            onClick={() => dispatch({ type: "selectPostcode", code: null })}
+          >
+            <span style={{ font: "700 12px var(--gani-font-ui)", color: "var(--gani-ink-2)" }}>Clear selection</span>
+          </button>
+        </section>
+      </div>
+    );
+  }
   const kindLabel = district ? "Postcode district" : "Postcode sector";
   return (
     <div className={`panel-right ${rightOpen ? "" : "collapsed"}`}>
@@ -240,10 +261,10 @@ function PostcodePanel({ code }: { code: string }) {
         </table>
         <UncertaintyNote />
         <p className="format-hint" style={{ marginTop: 8 }}>
-          Marker placed at the postcode's reference point (median of its unit postcodes) —
-          postcode boundaries are not drawn because none exist under an open licence.
-          Scores shown in bands; small differences between areas are not meaningful at
-          these sample sizes.
+          Boundary derived from licence-cleared unit-postcode locations (Voronoi of the
+          area's unit postcodes) — indicative, not an official boundary. Scores shown in
+          bands; small differences between areas are not meaningful at these sample
+          sizes.
         </p>
         <button
           className="kpi-card"

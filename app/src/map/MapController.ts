@@ -7,7 +7,6 @@ import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Graphic from "@arcgis/core/Graphic";
 import Extent from "@arcgis/core/geometry/Extent";
-import Point from "@arcgis/core/geometry/Point";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import { geographicToWebMercator } from "@arcgis/core/geometry/support/webMercatorUtils";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
@@ -23,7 +22,7 @@ import type Geometry from "@arcgis/core/geometry/Geometry";
 
 
 import type { FormatId, MetricId } from "../data";
-import { buildPointRenderer, buildRenderer, buildSdzRenderer } from "./renderers";
+import { buildRenderer, buildSdzRenderer } from "./renderers";
 import {
   localData,
   osmVectorBasemapItemId,
@@ -432,104 +431,122 @@ export class MapController {
     this.sdzLayer.definitionExpression = sdzDefinitionFor(field);
   }
 
-  // ——— Postcode marker geographies (no open-licence boundaries exist, so
-  // published results render as markers at reference points, never polygons).
-  postcodeLayer: GeoJSONLayer | null = null;
-  private postcodeAnchors = new globalThis.Map<string, Point>();
+  // ——— Postcode geographies: true district/sector choropleths. Boundaries
+  // are DERIVED (Voronoi of ~43k licence-cleared NSPL unit-postcode
+  // locations, dissolved and clipped to the council outline) and labelled as
+  // indicative wherever shown; built by scripts/build_postcode_polygons.py.
+  pcLayers: { districts: GeoJSONLayer | null; sectors: GeoJSONLayer | null } = {
+    districts: null,
+    sectors: null,
+  };
+  private pcGeomsByCode = new globalThis.Map<string, Geometry>();
   private onSelectPostcode: ((code: string | null) => void) | null = null;
+  private activePcKind: "districts" | "sectors" | null = null;
 
   setOnSelectPostcode(cb: ((code: string | null) => void) | null) {
     this.onSelectPostcode = cb;
   }
 
-  /**
-   * Build the marker layer once from joined published results. A GeoJSONLayer
-   * over a Blob URL, not a client-side FeatureLayer source: in SDK 5.1.27 the
-   * latter silently paints nothing (48 features in the layer view, zero
-   * pixels, even with a flat SimpleRenderer) — the same family of quirk as
-   * the constructed-ClassBreaksRenderer failure documented in renderers.ts.
-   */
-  setPostcodeData(rows: PostcodePointRow[]) {
-    if (this.postcodeLayer || !this.view) return;
-    rows.forEach((r) => {
-      this.postcodeAnchors.set(
-        r.code,
-        geographicToWebMercator(
-          new Point({ longitude: r.lon, latitude: r.lat, spatialReference: SpatialReference.WGS84 }),
-        ) as Point,
-      );
-    });
-    const fc = {
-      type: "FeatureCollection",
-      features: rows.map((r) => ({
-        type: "Feature",
-        properties: {
-          kind: r.kind,
-          code: r.code,
-          place: r.place,
-          n: r.n,
-          total_pct: r.total_pct,
-          total_index: r.total_index,
-          idx_at: r.idx_at,
-          idx_aw: r.idx_aw,
-          idx_q: r.idx_q,
-          idx_b: r.idx_b,
-        },
-        geometry: { type: "Point", coordinates: [r.lon, r.lat] },
-      })),
-    };
-    this.postcodeLayer = new GeoJSONLayer({
-      url: URL.createObjectURL(new Blob([JSON.stringify(fc)], { type: "application/json" })),
-      title: "Postcode results (reference points)",
-      copyright: "Published POMNI 2025 results at postcode reference points",
-      // hitTest only returns fields the renderer needs unless this is set —
-      // without it, click handlers see no `code` attribute
-      outFields: ["*"],
-      popupEnabled: false,
-      visible: false,
-      renderer: buildPointRenderer("total", "pct"),
-    });
-    // above the choropleth and context layers, below the selection halo
-    this.view.map?.layers.add(this.postcodeLayer, this.view.map.layers.indexOf(this.selectionLayer));
+  /** The postcode layer currently shown, if any (for hit-testing). */
+  get postcodeLayer(): GeoJSONLayer | null {
+    return this.activePcKind ? this.pcLayers[this.activePcKind] : null;
+  }
+
+  private ensurePcLayer(kind: "districts" | "sectors"): GeoJSONLayer | null {
+    const view = this.view;
+    if (!view) return null;
+    if (!this.pcLayers[kind]) {
+      const layer = new GeoJSONLayer({
+        url: `${import.meta.env.BASE_URL}${kind === "districts" ? localData.pcDistricts : localData.pcSectors}`,
+        title: kind === "districts" ? "Postcode districts (derived)" : "Postcode sectors (derived)",
+        copyright: "Boundaries derived from licensed unit-postcode locations (indicative)",
+        outFields: ["*"], // hitTest strips attributes without this
+        popupEnabled: false,
+        visible: false,
+        opacity: 0.92,
+        renderer: buildRenderer("total", "pct"),
+      });
+      this.pcLayers[kind] = layer;
+      // same slot as the council choropleth: under context layers & selection
+      view.map?.layers.add(layer, view.map.layers.indexOf(this.lgdLayer) + 1);
+      layer
+        .queryFeatures({
+          where: "1=1",
+          returnGeometry: true,
+          outFields: ["code"],
+          outSpatialReference: SpatialReference.WebMercator,
+        })
+        .then((fs) => {
+          fs.features.forEach((f) =>
+            this.pcGeomsByCode.set(`${kind}:${f.attributes.code}`, f.geometry!),
+          );
+        })
+        .catch(() => undefined);
+    }
+    return this.pcLayers[kind];
   }
 
   setPostcodeGeography(kind: "districts" | "sectors" | null) {
-    if (!this.postcodeLayer) return;
-    this.postcodeLayer.visible = kind !== null;
-    if (kind) this.postcodeLayer.definitionExpression = `kind = '${kind}'`;
+    this.activePcKind = kind;
+    (["districts", "sectors"] as const).forEach((k) => {
+      if (kind === k) this.ensurePcLayer(k);
+      const l = this.pcLayers[k];
+      if (l) l.visible = kind === k;
+    });
   }
 
   setPostcodeRenderer(metric: MetricId, format: FormatId) {
-    if (this.postcodeLayer) this.postcodeLayer.renderer = buildPointRenderer(metric, format);
+    (["districts", "sectors"] as const).forEach((k) => {
+      const l = this.pcLayers[k];
+      if (l) l.renderer = buildRenderer(metric, format);
+    });
   }
 
-  /** Gold halo + zoom for a selected postcode reference point. */
+  /** Gold outline + zoom for a selected postcode district/sector. */
   selectPostcode(code: string | null, kind: "districts" | "sectors", zoom = true) {
     this.selectionLayer.removeAll();
     const view = this.view;
     if (!view || !code) return;
-    const pt = this.postcodeAnchors.get(code);
-    if (!pt) return;
-    this.selectionLayer.add(
-      new Graphic({
-        geometry: pt,
-        symbol: new SimpleMarkerSymbol({
-          style: "circle",
-          size: 20,
-          color: [226, 183, 107, 0.12],
-          outline: { color: palette.gold, width: 2.2 },
+    const apply = (geom: Geometry) => {
+      this.selectionLayer.add(
+        new Graphic({
+          geometry: geom,
+          symbol: new SimpleFillSymbol({
+            color: "rgba(226, 183, 107, 0.05)",
+            outline: { color: palette.gold, width: 2.2 },
+          }),
         }),
-      }),
-    );
-    if (zoom) {
-      const scale = kind === "districts" ? 220000 : 100000;
+      );
+      if (!zoom) return;
+      const target = (geom.extent ?? NI_EXTENT).clone().expand(2.1);
       if (!prefersReducedMotion()) {
-        view.goTo({ target: pt, scale }, { duration: 800, easing: "ease-in-out" }).catch(() => undefined);
+        view.goTo(target, { duration: 800, easing: "ease-in-out" }).catch(() => undefined);
       } else {
-        view.center = pt;
-        view.scale = scale;
+        view.extent = target;
       }
+    };
+    const geom = this.pcGeomsByCode.get(`${kind}:${code}`);
+    if (geom) {
+      apply(geom);
+      return;
     }
+    // geometry cache may still be filling on first use
+    const layer = this.ensurePcLayer(kind);
+    layer
+      ?.queryFeatures({
+        where: `code = '${code.replace(/'/g, "''")}'`,
+        returnGeometry: true,
+        outFields: ["code"],
+        outSpatialReference: SpatialReference.WebMercator,
+      })
+      .then((fs) => {
+        const g = fs.features[0]?.geometry;
+        if (g) {
+          this.pcGeomsByCode.set(`${kind}:${code}`, g);
+          apply(g);
+        }
+      })
+      .catch(() => undefined);
   }
 
   /** Zoom to one Super Data Zone on the provision surface (by SDZ_Code). */

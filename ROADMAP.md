@@ -148,16 +148,20 @@ waves, decile mapping once methodology confirmed, official brand assets once app
 
 Built from client-supplied datasets and feedback:
 
-- **Postcode results on the map**: the supplied NI postcode dataset is geocoded unit
-  postcode *points* (61,945 features; 42,796 precise unit-level matches), not polygons —
-  so, honouring the no-approximate-boundaries rule, published POMNI results now render
-  as **markers at postcode reference points** (median of each unit's member postcodes;
-  all 48 districts + 23 sectors resolved, geography spot-checked, coverage asserted by
-  tests). Explore gains a Geography switch (Councils / Districts / Sectors): markers use
-  the same defined class bands as the choropleth, code labels, click-for-profile panels
-  (place, %, index, theme indices, n badge, MoE note, bands framing), search-to-map for
-  postcodes, and a ghosted council layer beneath for context. Reference points are built
-  by `scripts/build_postcode_points.py` (source file not committed).
+- **Postcode results on the map** (evolved in two steps the same day): the first
+  supplied dataset was geocoded unit-postcode *points*, so published results initially
+  rendered as markers at reference points. The client then cleared licensing and
+  confirmed polygons were wanted — the re-supplied data (NSPL Nov 2020 BT unit
+  postcodes, FileGDB, Irish Grid) was still points, so **boundaries are derived**:
+  Voronoi tessellation of 42,767 precise unit-postcode locations, dissolved to 80
+  districts and 235 sectors, clipped to the council outline, simplified and bundled
+  (~650 KiB total; `scripts/build_postcode_polygons.py`). Explore's Geography switch
+  (Councils / Districts / Sectors) now shows **true postcode choropleths** — published
+  units in the defined class bands, unpublished units honestly "Not published (n < 30)"
+  (explicit-null fields so GeoJSONLayer schema inference keeps the value fields),
+  click-for-profile panels for both published and unpublished units, search-to-map,
+  code labels, and "derived / indicative" labelling throughout (CLAUDE.md GIS rule
+  updated accordingly). Join coverage 48/48 + 23/23 asserted by tests.
 - **Named settlement context**: first delivered as unnamed OSNI 50k footprints
   (that source has no name attribute), then upgraded the same day when the client
   supplied the NI Planning **Settlement Development Limits** (statutory Area Plans,

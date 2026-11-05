@@ -89,21 +89,21 @@ export default function App() {
   const pcActive = mode === "explore" && geography !== "councils";
   const pcRows = usePostcodePoints(pcActive || selectedPostcode != null);
   useEffect(() => {
-    if (!pcRows || pcRows.length === 0) return;
+    // layers are bundled; just wait for the view, then toggle the geography
+    const applyGeo = () =>
+      mainCtl.setPostcodeGeography(pcActive ? (geography as "districts" | "sectors") : null);
+    if (mainCtl.view) {
+      applyGeo();
+      return;
+    }
+    if (!pcActive) return;
     const t = window.setInterval(() => {
       if (mainCtl.view) {
         window.clearInterval(t);
-        mainCtl.setPostcodeData(pcRows);
-        mainCtl.setPostcodeRenderer(metric, format);
-        mainCtl.setPostcodeGeography(pcActive ? (geography as "districts" | "sectors") : null);
+        applyGeo();
       }
     }, 150);
     return () => window.clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pcRows, mainCtl]);
-  useEffect(() => {
-    mainCtl.setPostcodeGeography(pcActive ? (geography as "districts" | "sectors") : null);
-    mainCtl.setChoroplethDimmed(pcActive);
   }, [pcActive, geography, mainCtl]);
   useEffect(() => {
     if (selectedPostcode && geography !== "councils") {
@@ -146,10 +146,13 @@ export default function App() {
   // the two surfaces never stack).
   useEffect(() => {
     if (pvpOpened) rightCtl.setSdz(sdzOn && mode === "pvp");
-    // In the Accessibility explorer the choropleth hides so the perception and
-    // provision surfaces never stack. Story mode choreographs its own
-    // choropleth per chapter — leave it alone (single writer).
-    if (mode !== "story") mainCtl.setChoroplethVisible(mode !== "access");
+    // The council choropleth hides in the Accessibility explorer (so the two
+    // surfaces never stack) and under the full-coverage postcode choropleths.
+    // Story mode choreographs its own choropleth — leave it alone.
+    if (mode !== "story")
+      mainCtl.setChoroplethVisible(
+        mode !== "access" && !(mode === "explore" && geography !== "councils"),
+      );
     // setSdz is a no-op until the view exists — poll briefly so entering the
     // Accessibility explorer right after a cold load still shows the surface.
     if (mainCtl.view) {
@@ -163,7 +166,7 @@ export default function App() {
       }
     }, 150);
     return () => window.clearInterval(t);
-  }, [sdzOn, mode, pvpOpened, rightCtl, mainCtl]);
+  }, [sdzOn, mode, geography, pvpOpened, rightCtl, mainCtl]);
 
   useEffect(() => {
     if (pvpOpened) rightCtl.setSdzField(sdzField);

@@ -115,8 +115,14 @@ export const localData = {
   settlements: "data/osni_settlements.json",
   settlementLabels: "data/settlement_labels.json",
   /** Reference points (median of geocoded unit postcodes) for the published
-   * POMNI postcode geographies — label anchors, never boundaries. */
+   * POMNI postcode geographies — label anchors. */
   postcodePoints: "data/postcode_points.json",
+  /** DERIVED postcode boundaries (Voronoi of licence-cleared NSPL unit
+   * postcode locations, dissolved & clipped to the council outline) with
+   * published POMNI results joined; indicative, labelled as derived.
+   * Built by scripts/build_postcode_polygons.py. */
+  pcDistricts: "data/pc_districts_joined.geojson",
+  pcSectors: "data/pc_sectors_joined.geojson",
 };
 
 /** Reserved for future integration (per Stage 1 brief). */

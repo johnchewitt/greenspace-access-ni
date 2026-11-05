@@ -136,3 +136,42 @@ describe("postcode geographies (client-supplied reference points)", () => {
     expect(sdzDefinitionFor("Percent2km")).toBe("Year_ = '2025'");
   });
 });
+
+
+describe("derived postcode polygons", () => {
+  it("every published district and sector has a derived boundary (pub=1)", async () => {
+    const fs = await import("node:fs");
+    const { postcodeAreas, postcodeSectors } = await import("../src/data");
+    const dd = JSON.parse(fs.readFileSync("public/data/pc_districts_joined.geojson", "utf8"));
+    const sd = JSON.parse(fs.readFileSync("public/data/pc_sectors_joined.geojson", "utf8"));
+    const dPub = new Set(dd.features.filter((f: { properties: { pub: number } }) => f.properties.pub === 1).map((f: { properties: { code: string } }) => f.properties.code));
+    const sPub = new Set(sd.features.filter((f: { properties: { pub: number } }) => f.properties.pub === 1).map((f: { properties: { code: string } }) => f.properties.code));
+    for (const r of postcodeAreas) expect(dPub.has(r.postcode_area), r.postcode_area).toBe(true);
+    for (const r of postcodeSectors) expect(sPub.has(r.postcode_sector), r.postcode_sector).toBe(true);
+    expect(dPub.size).toBe(postcodeAreas.length);
+    expect(sPub.size).toBe(postcodeSectors.length);
+  });
+
+  it("published features carry the renderer's field names with published values", async () => {
+    const fs = await import("node:fs");
+    const { postcodeAreas } = await import("../src/data");
+    const dd = JSON.parse(fs.readFileSync("public/data/pc_districts_joined.geojson", "utf8"));
+    const bt20 = dd.features.find((f: { properties: { code: string } }) => f.properties.code === "BT20").properties;
+    const pub = postcodeAreas.find((r) => r.postcode_area === "BT20")!;
+    expect(bt20.total_pct).toBe(pub.total_pct);
+    expect(bt20.total_index).toBe(pub.total_index);
+    expect(bt20.idx_at).toBe(pub.themes_index.access_to);
+    expect(bt20.n).toBe(pub.sample_n);
+  });
+
+  it("unpublished features carry no survey values (nothing to mistake for data)", async () => {
+    const fs = await import("node:fs");
+    const dd = JSON.parse(fs.readFileSync("public/data/pc_districts_joined.geojson", "utf8"));
+    const unpub = dd.features.filter((f: { properties: { pub: number } }) => f.properties.pub === 0);
+    expect(unpub.length).toBeGreaterThan(0);
+    for (const f of unpub) {
+      expect(f.properties.total_pct).toBeNull();
+      expect(f.properties.total_index).toBeNull();
+    }
+  });
+});
