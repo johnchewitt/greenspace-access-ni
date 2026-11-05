@@ -59,9 +59,18 @@ export function PostcodeLabels({
       () => [controller.view?.extent],
       () => requestAnimationFrame(update),
     );
+    // also reposition when the view finishes an update cycle — without this,
+    // labels placed before the first frame sit at the origin until a pan
+    const h2 = reactiveUtils.watch(
+      () => controller.view?.updating,
+      (u) => {
+        if (u === false) requestAnimationFrame(update);
+      },
+    );
     return () => {
       window.clearInterval(t);
       h.remove();
+      h2.remove();
     };
   }, [controller, anchors]);
 

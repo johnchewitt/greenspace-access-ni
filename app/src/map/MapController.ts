@@ -482,6 +482,9 @@ export class MapController {
       url: URL.createObjectURL(new Blob([JSON.stringify(fc)], { type: "application/json" })),
       title: "Postcode results (reference points)",
       copyright: "Published POMNI 2025 results at postcode reference points",
+      // hitTest only returns fields the renderer needs unless this is set —
+      // without it, click handlers see no `code` attribute
+      outFields: ["*"],
       popupEnabled: false,
       visible: false,
       renderer: buildPointRenderer("total", "pct"),

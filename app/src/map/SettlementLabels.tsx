@@ -75,6 +75,14 @@ export function SettlementLabels({ controller, visible }: { controller: MapContr
       () => [controller.view?.extent],
       () => requestAnimationFrame(update),
     );
+    // also reposition when the view finishes an update cycle — without this,
+    // labels placed before the first frame sit at the origin until a pan
+    const h2 = reactiveUtils.watch(
+      () => controller.view?.updating,
+      (u) => {
+        if (u === false) requestAnimationFrame(update);
+      },
+    );
     const t = window.setInterval(() => {
       if (controller.view) {
         window.clearInterval(t);
@@ -83,6 +91,7 @@ export function SettlementLabels({ controller, visible }: { controller: MapContr
     }, 250);
     return () => {
       h.remove();
+      h2.remove();
       window.clearInterval(t);
     };
   }, [controller, anchors, visible]);
