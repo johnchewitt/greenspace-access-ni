@@ -61,5 +61,32 @@ export function pickLatestProvision(
   return { byCode, year };
 }
 
+export interface NIProvision {
+  year: number | null;
+  pct400: number | null;
+  pct1km: number | null;
+  pct2km: number | null;
+}
+
+/** Pick the latest NI-wide row (service holds one row per analysis year). */
+export function pickLatestNI(
+  features: { attributes: { Year_?: string | number; Percent400?: number; Percent1km?: number; Percent2km?: number } }[],
+): NIProvision | null {
+  let best: NIProvision | null = null;
+  for (const f of features) {
+    const a = f.attributes;
+    const year = a.Year_ != null ? Number(a.Year_) : null;
+    if (!best || (year ?? -1) > (best.year ?? -1)) {
+      best = {
+        year: Number.isFinite(year) ? year : null,
+        pct400: a.Percent400 ?? null,
+        pct1km: a.Percent1km ?? null,
+        pct2km: a.Percent2km ?? null,
+      };
+    }
+  }
+  return best;
+}
+
 /** Display formatter: service values are percentages already. */
 export const fmtProvision = (v: number | null) => (v == null ? "—" : `${v.toFixed(1)}%`);

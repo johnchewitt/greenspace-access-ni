@@ -7,7 +7,10 @@ import {
   methodology,
   ni,
   surveyInputs,
+  type ThemeId,
 } from "../../data";
+import { useAppDispatch } from "../../state/AppState";
+import { Q14_STATEMENTS } from "./scoring";
 import { themeSeries } from "../../config/branding";
 import { Chart } from "../../charts/Chart";
 import { ScoreExplainer } from "./ScoreExplainer";
@@ -37,7 +40,25 @@ const THEME_BLURBS: Record<string, string> = {
     "Does it improve lives? Perceived benefits to mental health and physical activity, and to community and place.",
 };
 
+/** % agreeing (strongly + slightly) per Q14 statement — published categories summed. */
+function agreementForTheme(themeId: ThemeId): { text: string; agree: number }[] {
+  const dist = (surveyInputs as {
+    q14: { response_distributions: Record<string, { agree_strongly: number; agree_slightly: number }> };
+  }).q14.response_distributions;
+  return Q14_STATEMENTS.filter((st) => st.theme === themeId).map((st) => {
+    // Keys in the published distributions equal the statement text, sometimes
+    // with a clarifying suffix (e.g. "…, such as seating, bins, or toilets").
+    const key = Object.keys(dist).find((k) => k === st.text || k.startsWith(st.text));
+    const d = key ? dist[key] : null;
+    return {
+      text: st.text,
+      agree: d ? Math.round((d.agree_strongly + d.agree_slightly) * 100) : null,
+    };
+  }).filter((r): r is { text: string; agree: number } => r.agree != null);
+}
+
 export function UnderstandOverlay() {
+  const dispatch = useAppDispatch();
   const themes = (methodology as { themes: ThemeDef[] }).themes;
   const q14 = useMemo(() => q14Option(), []);
   const q15 = useMemo(() => q15Option(), []);
@@ -77,12 +98,56 @@ export function UnderstandOverlay() {
                   <li key={i}>{i.replace("Q14: ", "Q14 · ").replace("Q15: ", "Q15 · ")}</li>
                 ))}
               </ul>
+              <div style={{ marginTop: 10 }}>
+                {agreementForTheme(t.id as ThemeId).map((row) => (
+                  <div key={row.text} style={{ marginBottom: 5 }} title={`My local greenspaces ${row.text}: ${row.agree}% agree (strongly + slightly)`}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--gani-ink-3)" }}>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "85%" }}>{row.text}</span>
+                      <span style={{ fontVariantNumeric: "tabular-nums" }}>{row.agree}%</span>
+                    </div>
+                    <div style={{ height: 4, borderRadius: 2, background: "rgba(8,29,40,0.7)" }}>
+                      <div style={{ width: `${row.agree}%`, height: "100%", borderRadius: 2, background: themeSeries[t.id as keyof typeof themeSeries], opacity: 0.85 }} />
+                    </div>
+                  </div>
+                ))}
+                <p className="legend-note" style={{ margin: "4px 0 0" }}>% agreeing (strongly + slightly), NI level</p>
+              </div>
               <p className="max">
                 Scored out of {t.max_points} points · contributes ¼ of the overall index
               </p>
+              <button
+                style={{ marginTop: 8, width: "100%", padding: "7px 10px", borderRadius: 10, border: "1px solid rgba(67,220,193,0.3)", background: "rgba(8,29,40,0.5)", color: "var(--gani-cream)", font: "700 11px var(--gani-font-ui)", cursor: "pointer" }}
+                onClick={() => {
+                  dispatch({ type: "metric", metric: t.id as ThemeId });
+                  dispatch({ type: "mode", mode: "explore" });
+                }}
+              >
+                Explore this theme on the map →
+              </button>
             </section>
           ))}
         </div>
+
+        <section className="prose-block glass" style={{ border: "1px solid rgba(127,174,245,0.3)" }}>
+          <h3>The one defined quantitative threshold</h3>
+          <p>
+            The themes above are a <b>proposed</b> survey-based index, not adopted
+            standards. On the provision side, one defined ambition exists: the Programme
+            for Government outdoor-recreation indicator tracks households within a{" "}
+            <b>5-minute (400 m) walk</b> of quality greenspace larger than 2 ha — the
+            threshold behind the Greenspace NI Map's published 400 m analysis. The app
+            reports those published figures without making a compliance judgement.
+          </p>
+          <button
+            style={{ marginTop: 4, padding: "8px 14px", borderRadius: 10, border: "1px solid rgba(127,174,245,0.4)", background: "rgba(8,29,40,0.5)", color: "var(--gani-cream)", font: "700 11.5px var(--gani-font-ui)", cursor: "pointer" }}
+            onClick={() => {
+              dispatch({ type: "mode", mode: "pvp" });
+              dispatch({ type: "sdz", on: true });
+            }}
+          >
+            See the 400 m surface in Perception vs Provision →
+          </button>
+        </section>
 
         <section className="prose-block glass">
           <h3>From answers to a score</h3>

@@ -11,9 +11,11 @@ import { useAppDispatch, useAppState, type Mode } from "../state/AppState";
 
 const MODES: { id: Mode; label: string; signature?: boolean }[] = [
   { id: "explore", label: "EXPLORE" },
+  { id: "insights", label: "INSIGHTS" },
   { id: "understand", label: "UNDERSTAND" },
   { id: "compare", label: "COMPARE" },
   { id: "pvp", label: "PERCEPTION VS PROVISION", signature: true },
+  { id: "story", label: "STORY", signature: true },
 ];
 
 interface SearchHit {
@@ -64,7 +66,7 @@ export function Header() {
   const choose = (h: SearchHit) => {
     setQ("");
     if (h.code) {
-      if (mode === "understand" || mode === "compare") dispatch({ type: "mode", mode: "explore" });
+      if (mode !== "explore" && mode !== "pvp") dispatch({ type: "mode", mode: "explore" });
       dispatch({ type: "select", code: h.code });
     }
   };

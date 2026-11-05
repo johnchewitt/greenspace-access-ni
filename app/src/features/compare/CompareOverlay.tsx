@@ -15,11 +15,13 @@ import { Chart } from "../../charts/Chart";
 import { areaRadarOption, councilRankOption } from "../../charts/options";
 import { FormatToggle } from "../../components/shared";
 import { PostcodeCompare, ThemeLeaders } from "./PostcodeCompare";
+import { TwoCouncils } from "./TwoCouncils";
+import type { ProvisionState } from "../pvp/PvpMode";
 import { useState } from "react";
 
 type Geo = "councils" | "areas" | "sectors";
 
-export function CompareOverlay() {
+export function CompareOverlay({ provision }: { provision: ProvisionState }) {
   const { metric, format, selectedCode } = useAppState();
   const dispatch = useAppDispatch();
   const [geo, setGeo] = useState<Geo>("councils");
@@ -166,6 +168,7 @@ export function CompareOverlay() {
           </section>
         </div>
         )}
+        {geo === "councils" && <TwoCouncils provision={provision} />}
       </div>
     </div>
   );

@@ -8,10 +8,11 @@ import {
 } from "react";
 import type { FormatId, MetricId } from "../data";
 
-export type Mode = "explore" | "understand" | "compare" | "pvp";
+export type Mode = "explore" | "insights" | "understand" | "compare" | "pvp" | "story";
 
 export type LayerId = "greenspace" | "trails" | "accessPoints" | "bluespace";
 export type BasemapStyle = "none" | "dark" | "streets";
+export type SdzField = "Percent400" | "Percent1km" | "Percent2km";
 export type ServiceState = "idle" | "loading" | "ok" | "error";
 
 export interface AppState {
@@ -26,6 +27,9 @@ export interface AppState {
   layers: Record<LayerId, boolean>;
   basemap: BasemapStyle;
   sdzOn: boolean;
+  sdzField: SdzField;
+  /** councils emphasised on the maps (quadrant filtering); null = none */
+  emphasizedCodes: string[] | null;
   serviceStatus: Record<string, ServiceState>;
   infoOpen: boolean;
   methodologyOpen: boolean;
@@ -40,6 +44,8 @@ export type Action =
   | { type: "layer"; layer: LayerId; on: boolean }
   | { type: "basemap"; style: BasemapStyle }
   | { type: "sdz"; on: boolean }
+  | { type: "sdzField"; field: SdzField }
+  | { type: "emphasize"; codes: string[] | null }
   | { type: "service"; id: string; state: ServiceState }
   | { type: "info"; open: boolean }
   | { type: "methodology"; open: boolean };
@@ -55,6 +61,8 @@ export const initialState: AppState = {
   layers: { greenspace: false, trails: false, accessPoints: false, bluespace: false },
   basemap: "dark",
   sdzOn: false,
+  sdzField: "Percent400",
+  emphasizedCodes: null,
   serviceStatus: {},
   infoOpen: false,
   methodologyOpen: false,
@@ -69,6 +77,8 @@ export function reducer(state: AppState, a: Action): AppState {
       // user's backdrop choice.)
       if (a.mode === "pvp") {
         next.layers = { ...state.layers, greenspace: true, trails: true, accessPoints: true };
+      } else {
+        next.emphasizedCodes = null;
       }
       return next;
     }
@@ -81,7 +91,12 @@ export function reducer(state: AppState, a: Action): AppState {
     case "format":
       return { ...state, format: a.format };
     case "select":
-      return { ...state, selectedCode: a.code, rightOpen: a.code ? true : state.rightOpen };
+      return {
+        ...state,
+        selectedCode: a.code,
+        emphasizedCodes: null,
+        rightOpen: a.code ? true : state.rightOpen,
+      };
     case "panel":
       return a.side === "left"
         ? { ...state, leftOpen: a.open }
@@ -92,6 +107,10 @@ export function reducer(state: AppState, a: Action): AppState {
       return { ...state, basemap: a.style };
     case "sdz":
       return { ...state, sdzOn: a.on };
+    case "sdzField":
+      return { ...state, sdzField: a.field };
+    case "emphasize":
+      return { ...state, emphasizedCodes: a.codes };
     case "service":
       return { ...state, serviceStatus: { ...state.serviceStatus, [a.id]: a.state } };
     case "info":

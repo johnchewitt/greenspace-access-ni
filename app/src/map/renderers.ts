@@ -56,11 +56,11 @@ export const sdzLabels = ["Under 20%", "20–40%", "40–60%", "60–80%", "80% 
  * silently rendering nothing on this FeatureLayer in SDK 5.1.27, while the
  * identical autocast object (the SDK's documented path) draws correctly.
  */
-export function buildSdzRenderer(): ClassBreaksRenderer {
+export function buildSdzRenderer(field: "Percent400" | "Percent1km" | "Percent2km" = "Percent400"): ClassBreaksRenderer {
   const edges = [-1, ...sdzBreaks, 101];
   return {
     type: "class-breaks",
-    field: "Percent400",
+    field,
     classBreakInfos: sdzRamp.map((color, i) => ({
       minValue: edges[i],
       maxValue: edges[i + 1] === 101 ? 101 : edges[i + 1] - 0.000001,

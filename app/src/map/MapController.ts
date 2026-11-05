@@ -343,6 +343,31 @@ export class MapController {
     if (this.sdzLayer) this.sdzLayer.visible = on;
   }
 
+  setSdzField(field: "Percent400" | "Percent1km" | "Percent2km") {
+    if (this.sdzLayer) this.sdzLayer.renderer = buildSdzRenderer(field);
+  }
+
+  /**
+   * Emphasise a set of councils (quadrant filtering): others fade. Kept
+   * separate from single-council selection; selection wins when active.
+   */
+  async emphasize(codes: string[] | null) {
+    const view = this.view;
+    if (!view) return;
+    const lv = await view.whenLayerView(this.lgdLayer).catch(() => null);
+    if (!lv) return;
+    if (!codes || codes.length === 0) {
+      lv.featureEffect = null as unknown as FeatureEffect;
+      return;
+    }
+    const list = codes.map((c) => `'${c}'`).join(",");
+    lv.featureEffect = new FeatureEffect({
+      filter: new FeatureFilter({ where: `code IN (${list})` }),
+      excludedEffect: "opacity(30%) saturate(50%)",
+      includedEffect: "brightness(1.05)",
+    });
+  }
+
   /** Reference mode for the provision map: council outlines only, no fills. */
   useOutlineStyle() {
     this.lgdLayer.renderer = new SimpleRenderer({

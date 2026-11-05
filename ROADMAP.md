@@ -56,6 +56,48 @@ experiences shipped in one stage:
 - Deferred to post-demo feedback: Outscape's vintage preference, postcode boundary
   licensing decision, SOA/settlement surfaces, any demo-driven changes.
 
+## Stage 3 brief (client specification A–F) ✅ (delivered 5 Nov 2026)
+
+Built against the client's Stage 3 brief; every indicator from validated data only.
+
+- **A — Insights dashboard** (new INSIGHTS mode): live greenspace hectares and site
+  counts queried from the verified ORNI layers (sum/count statistics, with explicit
+  offline fallback notes); NI household-proximity KPIs at 400 m / 1 km / 2 km from the
+  live-verified AllNI analysis layer, vintage-labelled; provision-by-council bar
+  (click-through to the map); survey perception KPIs alongside, clearly separated;
+  provenance note covering the household basis and the PfG 400 m ambition "without
+  constituting a formal assessment". No fabricated statistics — every number is either
+  a published survey value or a live query result, and failures degrade to a note.
+- **B — Perception vs Provision completed**: side-by-side panels retained; new
+  evidence drawer with a perception-index × 400 m-provision scatter (reference lines
+  at NI values), a four-quadrant classification (High/Low perception × High/Low
+  provision) with counts, click-to-emphasize on the map (FeatureFilter dim/highlight),
+  and an interpretation panel that names divergent councils while stating the result
+  is a prompt for further investigation — never a proven gap or causal claim.
+  Provision reference uses the published NI value, falling back to the council median
+  (labelled); classification returns null below 6 comparable councils. Threshold
+  toggle (400 m / 1 km / 2 km) re-renders the SDZ surface.
+- **C — Standards explorer**: UNDERSTAND theme cards with per-statement agreement
+  bars, scoring method explainer, recommended-vs-compliance distinction, and the PfG
+  400 m defined-threshold card linking each standard to the relevant map view.
+- **D — Accessibility explorer**: threshold switching on the SDZ household surface
+  with transparent communication that no live walking service-area (isochrone)
+  analysis is available — no circular buffers, no claimed dynamic analysis.
+- **E — Guided story**: six-chapter narrative (STORY mode) with map choreography via
+  the app's single state writer — chapter 6 emphasizes the three lowest Access To
+  councils (Fermanagh & Omagh 84, Mid Ulster 88, ACB&C 91) with a verified
+  FeatureFilter highlight; council labels shown for orientation; keyboard navigation
+  (←/→/Esc), progress dots, exit restores the explore state.
+- **F — Two-area comparison**: COMPARE "Two councils" view — paired theme-index bars
+  and an indicator table including live 400 m / 1 km provision rows (vintage-noted),
+  with both areas linkable to the map.
+- Design: topographic contour motif on overlay and story panels; palette validator
+  re-run; no new runtime dependencies.
+- Quality gate: 36 tests (incl. 9 new brief tests: quadrant classification verified
+  against live 2026 provision values, median fallback, sparse-data null, caveat
+  presence, NI vintage pinning, state transitions), lint, typecheck, build, headless
+  QA of all six modes, pixel-verified chapter-6 emphasis — all green.
+
 ## Stage 4 — Polish, verification & demo delivery (proposed)
 
 - Design polish pass (premium feel, motion, empty/loading states), accessibility audit

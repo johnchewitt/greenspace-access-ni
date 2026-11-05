@@ -12,16 +12,18 @@ import {
 } from "../../data";
 import {
   fmtProvision,
+  pickLatestNI,
   pickLatestProvision,
+  type NIProvision,
   type ProvisionAttrs,
   type ProvisionRecord,
 } from "./provision";
-import { councilProvision2025, outscapeLayers, sdzProvision } from "../../config/services";
+import { allNIAnalysis, councilProvision2025, outscapeLayers, sdzProvision } from "../../config/services";
 import { useAppDispatch, useAppState } from "../../state/AppState";
 import { SampleSizeBadge, Switch } from "../../components/shared";
 import { sdzLabels, sdzRamp } from "../../map/renderers";
 
-type ProvisionState =
+export type ProvisionState =
   | { status: "loading" }
   | { status: "error" }
   | { status: "ok"; byCode: Record<string, ProvisionRecord>; year: number | null };
@@ -60,6 +62,31 @@ export function useProvision(active: boolean): ProvisionState {
     };
   }, [active, state.status]);
   return state;
+}
+
+/** NI-wide published figures (latest vintage) — also the quadrant reference. */
+export function useNIProvision(active: boolean): NIProvision | null {
+  const [ni, setNi] = useState<NIProvision | null>(null);
+  useEffect(() => {
+    if (!active || ni) return;
+    let cancelled = false;
+    const layer = new FeatureLayer({ url: allNIAnalysis.url });
+    layer
+      .queryFeatures({
+        where: "1=1",
+        outFields: ["Year_", "Percent400", "Percent1km", "Percent2km"],
+        returnGeometry: false,
+      })
+      .then((fs) => {
+        if (cancelled) return;
+        setNi(pickLatestNI(fs.features as unknown as { attributes: Record<string, number | string> }[]));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [active, ni]);
+  return ni;
 }
 
 export function PvpBanner() {
@@ -114,8 +141,14 @@ export function PerceptionPanel() {
   );
 }
 
-export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
-  const { selectedCode, serviceStatus, sdzOn } = useAppState();
+export function ProvisionPanel({
+  provision,
+  niProvision,
+}: {
+  provision: ProvisionState;
+  niProvision: NIProvision | null;
+}) {
+  const { selectedCode, serviceStatus, sdzOn, sdzField } = useAppState();
   const dispatch = useAppDispatch();
   const rec =
     provision.status === "ok" && selectedCode ? provision.byCode[selectedCode] : null;
@@ -163,6 +196,25 @@ export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
         </p>
       ) : provision.status === "loading" ? (
         <p className="legend-note" style={{ marginTop: 6 }}>Loading published provision indicators…</p>
+      ) : niProvision ? (
+        <>
+          <div className="pvp-metric">
+            <span>NI households within 400 m of greenspace or trails</span>
+            <span className="v accent">{fmtProvision(niProvision.pct400)}</span>
+          </div>
+          <div className="pvp-metric">
+            <span>Within 1 km</span>
+            <span className="v">{fmtProvision(niProvision.pct1km)}</span>
+          </div>
+          <div className="pvp-metric">
+            <span>Within 2 km</span>
+            <span className="v">{fmtProvision(niProvision.pct2km)}</span>
+          </div>
+          <p className="legend-note">
+            Published NI-wide indicators{niProvision.year ? ` (${niProvision.year} vintage)` : ""}.
+            Select a council for its own figures.
+          </p>
+        </>
       ) : (
         <p className="legend-note" style={{ marginTop: 6 }}>
           Select a council to see its published household-proximity indicators.
@@ -196,6 +248,17 @@ export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
       </div>
       {sdzOn && (
         <>
+          <div className="format-toggle" style={{ marginTop: 8 }} role="group" aria-label="Proximity threshold">
+            {([
+              ["Percent400", "400 m"],
+              ["Percent1km", "1 km"],
+              ["Percent2km", "2 km"],
+            ] as const).map(([f, label]) => (
+              <button key={f} aria-pressed={sdzField === f} onClick={() => dispatch({ type: "sdzField", field: f })}>
+                {label}
+              </button>
+            ))}
+          </div>
           <div className="legend-swatches" style={{ marginTop: 6 }}>
             {sdzRamp.map((c, i) => (
               <div className="legend-row" key={c}>
@@ -205,8 +268,10 @@ export function ProvisionPanel({ provision }: { provision: ProvisionState }) {
             ))}
           </div>
           <p className="legend-note">
-            Households within 400 m of greenspace or trails, per Super Data Zone —{" "}
-            {sdzProvision.note}.
+            Households within {sdzField === "Percent400" ? "400 m" : sdzField === "Percent1km" ? "1 km" : "2 km"} of
+            greenspace or trails, per Super Data Zone — {sdzProvision.note}. These are
+            published network-derived indicators; no live walking service-area (isochrone)
+            analysis is available, so no travel-time zones are drawn.
           </p>
         </>
       )}

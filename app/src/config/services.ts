@@ -63,6 +63,19 @@ export const sdzProvision: RemoteLayerConfig = {
   note: "% of households within 400 m / 1 km / 2 km of greenspace or trails, per SDZ; 2026 analysis vintage",
 };
 
+/**
+ * Published NI-wide provision indicators (one row per analysis year 2023–2026,
+ * verified live; 2026: 48.0% / 75.22% / 84.8% of households within
+ * 400 m / 1 km / 2 km of greenspace or trails).
+ */
+export const allNIAnalysis: RemoteLayerConfig = {
+  id: "allNIAnalysis",
+  title: "GreenspaceNI All-NI Analysis",
+  url: `${ORNI}/GreenspaceNI_AllNIAnalysis2025/FeatureServer/0`,
+  verified: "2026-11-04",
+  note: "NI-wide % of households within 400 m / 1 km / 2 km; filter to one Year_ vintage",
+};
+
 /** Published objective provision indicators, council level, 2025 vintage. */
 export const councilProvision2025: RemoteLayerConfig = {
   id: "councilProvision2025",
