@@ -113,6 +113,7 @@ arcgis-map {
   align-items: center;
   gap: 12px;
   min-width: 0;
+  overflow: hidden; /* a shrunk wordmark ellipsizes instead of overlapping the nav */
 }
 .wordmark img { width: 34px; height: 34px; }
 .wordmark-title {
@@ -122,6 +123,8 @@ arcgis-map {
   letter-spacing: 0.01em;
   color: var(--gani-cream);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .wordmark-title em {
   font-style: normal;

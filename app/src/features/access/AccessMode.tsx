@@ -61,7 +61,7 @@ export function AccessPanel({ niProvision }: { niProvision: NIProvision | null }
       <div className="legend-swatches" style={{ marginTop: 8 }}>
         {sdzRamp.map((c, i) => (
           <div className="legend-row" key={c}>
-            <i style={{ background: c }} />
+            <i className="sw" style={{ background: c }} />
             <span>{sdzLabels[i]}</span>
           </div>
         ))}
