@@ -112,11 +112,23 @@ export default function App() {
   // the two surfaces never stack).
   useEffect(() => {
     if (pvpOpened) rightCtl.setSdz(sdzOn && mode === "pvp");
-    mainCtl.setSdz(sdzOn && mode === "access");
     // In the Accessibility explorer the choropleth hides so the perception and
     // provision surfaces never stack. Story mode choreographs its own
     // choropleth per chapter — leave it alone (single writer).
     if (mode !== "story") mainCtl.setChoroplethVisible(mode !== "access");
+    // setSdz is a no-op until the view exists — poll briefly so entering the
+    // Accessibility explorer right after a cold load still shows the surface.
+    if (mainCtl.view) {
+      mainCtl.setSdz(sdzOn && mode === "access");
+      return;
+    }
+    const t = window.setInterval(() => {
+      if (mainCtl.view) {
+        window.clearInterval(t);
+        mainCtl.setSdz(sdzOn && mode === "access");
+      }
+    }, 150);
+    return () => window.clearInterval(t);
   }, [sdzOn, mode, pvpOpened, rightCtl, mainCtl]);
 
   useEffect(() => {
@@ -132,6 +144,9 @@ export default function App() {
       if (cancelled) return;
       if (mainCtl.view) {
         window.clearInterval(t);
+        // Ensure the surface layer exists before querying it (the mode effect
+        // may still be waiting on the view when this one wins the race).
+        mainCtl.setSdz(true);
         void mainCtl.zoomToSdz(pendingSdzZoom).then(() => {
           if (!cancelled) dispatch({ type: "zoomSdz", code: null });
         });

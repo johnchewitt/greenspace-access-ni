@@ -1058,11 +1058,36 @@ button:focus-visible {
 
 @media print {
   @page { size: A4 landscape; margin: 10mm; }
-  body * { visibility: hidden; }
-  .report-sheet, .report-sheet * { visibility: visible; }
+  html, body, #root { height: auto !important; background: #fff !important; overflow: visible !important; }
+  :root, body { color-scheme: light; }
+  .app-frame { display: block; height: auto; background: none !important; }
+  /* Only the report sheet prints: the app and the modal chrome drop out of flow */
+  .app-header, .app-main, .tour-scrim, .report-toolbar { display: none !important; }
+  .report-scrim {
+    position: static !important;
+    display: block !important;
+    background: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .report-shell {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
+  }
   .report-sheet {
-    position: fixed; inset: 0; width: 100%; border-radius: 0; padding: 6mm 8mm;
-    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    border-radius: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
 
