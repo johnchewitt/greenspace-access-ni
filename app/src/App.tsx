@@ -24,6 +24,7 @@ import { EvidenceDrawer } from "./features/pvp/EvidenceDrawer";
 import { MapHost } from "./map/MapHost";
 import { CouncilLabels } from "./map/CouncilLabels";
 import { PostcodeLabels } from "./map/PostcodeLabels";
+import { SettlementLabels } from "./map/SettlementLabels";
 import { MapTooltip } from "./map/MapTooltip";
 import { MapController } from "./map/MapController";
 import { useViewSync } from "./map/useViewSync";
@@ -214,6 +215,10 @@ export default function App() {
         <div className={`map-stage ${mode === "pvp" ? "split" : ""}`}>
           <MapHost controller={mainCtl} label="Greenspace Index map of Northern Ireland">
             <CouncilLabels controller={mainCtl} visible={(mode === "explore" && geography === "councils") || mode === "pvp" || mode === "story"} />
+            <SettlementLabels
+              controller={mainCtl}
+              visible={layers.settlements && mode !== "pvp"}
+            />
             <PostcodeLabels
               controller={mainCtl}
               rows={pcRows}

@@ -178,22 +178,22 @@ export class MapController {
       trails: makeRemoteLayer(outscapeLayers.trails),
       accessPoints: makeRemoteLayer(outscapeLayers.accessPoints),
       bluespace: makeRemoteLayer(outscapeLayers.bluespace),
-      // Bundled OSNI 50k settlement footprints — unlabelled context (the
-      // source carries no name attribute), classed by settlement size.
+      // Bundled settlement development limits from the published statutory
+      // Area Plans (NI Planning open data) — named, tiered by limit area.
       settlements: new GeoJSONLayer({
         url: `${import.meta.env.BASE_URL}${localData.settlements}`,
-        title: "Settlement footprints (OSNI 50k)",
-        copyright: "OSNI Open Data",
+        title: "Settlement development limits",
+        copyright: "NI Planning Area Plans (open data)",
         popupEnabled: false,
         visible: false,
         renderer: {
           type: "unique-value",
-          field: "cls",
+          field: "t",
           uniqueValueInfos: [
-            { value: "LRG_TOWN", symbol: settlementSymbol(0.1, 1.1) },
-            { value: "TOWN", symbol: settlementSymbol(0.09, 0.9) },
-            { value: "VILLAGE", symbol: settlementSymbol(0.07, 0.7) },
-            { value: "SMALL_VILL", symbol: settlementSymbol(0.05, 0.5) },
+            { value: 1, symbol: settlementSymbol(0.09, 1.1) },
+            { value: 2, symbol: settlementSymbol(0.08, 0.9) },
+            { value: 3, symbol: settlementSymbol(0.06, 0.7) },
+            { value: 4, symbol: settlementSymbol(0.05, 0.5) },
           ],
         } as unknown as UniqueValueRenderer,
       }),

@@ -26,7 +26,7 @@ const LAYERS: { id: LayerId; label: string }[] = [
   { id: "trails", label: "Off-road trails" },
   { id: "accessPoints", label: "Access points" },
   { id: "bluespace", label: "Bluespace (early-stage)" },
-  { id: "settlements", label: "Settlement footprints (OSNI)" },
+  { id: "settlements", label: "Settlement limits (named)" },
 ];
 
 const GEOGRAPHIES: { id: Geography; label: string; hint: string }[] = [
@@ -128,8 +128,8 @@ export function LeftPanel() {
           })}
           <p className="legend-note">
             Live from Outscape's Greenspace NI Map services ({outscapeLayers.bluespace.note});
-            settlement footprints are bundled OSNI Open Data (unnamed in the source, so
-            shown without labels).
+            settlement development limits are from the published statutory Area Plans
+            (NI Planning open data), labelled by name as you zoom in.
           </p>
         </section>
 

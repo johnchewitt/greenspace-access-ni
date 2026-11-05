@@ -158,10 +158,13 @@ Built from client-supplied datasets and feedback:
   (place, %, index, theme indices, n badge, MoE note, bands framing), search-to-map for
   postcodes, and a ghosted council layer beneath for context. Reference points are built
   by `scripts/build_postcode_points.py` (source file not committed).
-- **OSNI settlement footprints**: bundled context layer (1,088 polygons, classed by
-  settlement size, 582 KiB). The source carries no name attribute, so the layer is
-  honest footprint context without labels — labelling needs a named open dataset
-  (flagged to the client).
+- **Named settlement context**: first delivered as unnamed OSNI 50k footprints
+  (that source has no name attribute), then upgraded the same day when the client
+  supplied the NI Planning **Settlement Development Limits** (statutory Area Plans,
+  Esri JSON, Irish Grid): 644 limits reprojected (EPSG:29902 → WGS84, geography
+  spot-checked), lightly simplified, tiered by area, bundled (594 KiB) with 628
+  deduplicated name anchors — rendered as subtle outlines with scale-gated italic
+  labels (larger settlements label first), per the client's request.
 - **2 km surface bug (client-reported)**: root cause found live — the 2026 SDZ vintage
   has no Percent2km values at all (0 of 849 rows; verified by REST query). Each
   threshold now pins the latest vintage that computed it (2 km → 2025, all 850 SDZs),

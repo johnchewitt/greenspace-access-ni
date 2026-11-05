@@ -51,8 +51,9 @@ export function AboutMode() {
               copied or re-hosted, and figures reflect the services at view time.
             </li>
             <li>
-              <b>Boundaries &amp; reference geography:</b> council boundaries and settlement
-              footprints derived from OSNI Open Data. No open-licence postcode polygons
+              <b>Boundaries &amp; reference geography:</b> council boundaries derived from OSNI Open
+              Data; settlement development limits from the published statutory Area Plans
+              (NI Planning open data). No open-licence postcode polygons
               exist for Northern Ireland, so postcode results are shown as charts and as{" "}
               <b>markers at postcode reference points</b> (the median position of each
               district's or sector's geocoded unit postcodes, from a client-supplied

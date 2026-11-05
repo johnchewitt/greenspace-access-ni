@@ -110,9 +110,10 @@ export const osmVectorBasemapItemId = "0df19d2d940b47658857cc2fc9623840";
 /** Local (bundled) assets — no network dependency. */
 export const localData = {
   lgdBoundaries: "data/ni_lgd_joined.geojson",
-  /** OSNI 50k settlement footprints (client-supplied, OSNI Open Data; no name
-   * attribute exists in the source, so this is unlabelled footprint context). */
+  /** Settlement development limits from the published statutory Area Plans
+   * (NI Planning open data, client-supplied; named via LOCATION). */
   settlements: "data/osni_settlements.json",
+  settlementLabels: "data/settlement_labels.json",
   /** Reference points (median of geocoded unit postcodes) for the published
    * POMNI postcode geographies — label anchors, never boundaries. */
   postcodePoints: "data/postcode_points.json",

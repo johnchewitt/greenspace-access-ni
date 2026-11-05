@@ -101,9 +101,9 @@ export function AccessPanel({ niProvision }: { niProvision: NIProvision | null }
           <Switch
             checked={layers.settlements}
             onChange={(on) => dispatch({ type: "layer", layer: "settlements", on })}
-            label="Settlement footprints (OSNI)"
+            label="Settlement limits (named)"
           />
-          <span>Settlement footprints (OSNI)</span>
+          <span>Settlement limits (named)</span>
         </div>
       </div>
 
