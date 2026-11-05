@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import { outscapeLayers } from "../../config/services";
 
@@ -18,8 +18,16 @@ export interface InsightStats {
  */
 export function useInsightStats(active: boolean): InsightStats | null {
   const [stats, setStats] = useState<InsightStats | null>(null);
+  const attempted = useRef(false);
   useEffect(() => {
-    if (!active || stats) return;
+    // Query on each activation until a (fully or partially) successful result is
+    // held; a failed attempt is retried on the NEXT activation, not in a loop.
+    if (!active) {
+      attempted.current = false;
+      return;
+    }
+    if ((stats && !stats.failed) || attempted.current) return;
+    attempted.current = true;
     let cancelled = false;
     const gs = new FeatureLayer({ url: outscapeLayers.greenspace.url });
     const trails = new FeatureLayer({ url: outscapeLayers.trails.url });

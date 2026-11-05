@@ -110,14 +110,14 @@ export function TwoCouncils({ provision }: { provision: ProvisionState }) {
         <span className="dot" style={{ width: 9, height: 9, borderRadius: "50%", background: A_COLOR }} />
         <select style={selStyle} value={aCode} onChange={(e) => setA(e.target.value)} aria-label="First council">
           {lgd.map((r) => (
-            <option key={r.lad_code} value={r.lad_code}>{LGD_DISPLAY[r.lad_code]}</option>
+            <option key={r.lad_code} value={r.lad_code} disabled={r.lad_code === bCode}>{LGD_DISPLAY[r.lad_code]}</option>
           ))}
         </select>
         <span style={{ color: "var(--gani-ink-3)", font: "700 11px var(--gani-font-ui)" }}>vs</span>
         <span className="dot" style={{ width: 9, height: 9, borderRadius: "50%", background: B_COLOR }} />
         <select style={selStyle} value={bCode} onChange={(e) => setB(e.target.value)} aria-label="Second council">
           {lgd.map((r) => (
-            <option key={r.lad_code} value={r.lad_code}>{LGD_DISPLAY[r.lad_code]}</option>
+            <option key={r.lad_code} value={r.lad_code} disabled={r.lad_code === aCode}>{LGD_DISPLAY[r.lad_code]}</option>
           ))}
         </select>
       </div>

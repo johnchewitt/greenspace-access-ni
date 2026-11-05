@@ -226,9 +226,14 @@ export function StoryMode({
     [controller],
   );
 
-  // Keyboard navigation
+  // Keyboard navigation — never steal keys from form fields or open dialogs
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.closest("input, textarea, select, [contenteditable]") || t.isContentEditable))
+        return;
+      if (document.querySelector(".modal-scrim")) return; // dialog owns Escape
       if (e.key === "ArrowRight") setIdx((i) => Math.min(i + 1, CHAPTERS.length - 1));
       if (e.key === "ArrowLeft") setIdx((i) => Math.max(i - 1, 0));
       if (e.key === "Escape") dispatch({ type: "mode", mode: "explore" });

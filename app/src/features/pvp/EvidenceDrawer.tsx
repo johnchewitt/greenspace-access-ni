@@ -148,8 +148,10 @@ export function EvidenceDrawer({
                 />
               )}
               <p className="legend-note" style={{ marginTop: 4 }}>
-                Reference lines: NI average index (100) and the published NI-wide 400 m
-                figure{q.provisionRefSource === "ni_published" && vintage ? ` (${q.provisionRef.toFixed(1)}%, ${vintage} vintage)` : ` (council median ${q.provisionRef.toFixed(1)}%)`}.
+                Reference lines: NI average index (100) and{" "}
+                {q.provisionRefSource === "ni_published"
+                  ? `the published NI-wide 400 m figure (${q.provisionRef.toFixed(1)}%${vintage ? `, ${vintage} vintage` : ""})`
+                  : `the council median 400 m figure (${q.provisionRef.toFixed(1)}% — NI-wide figure unavailable)`}.
                 "Higher / lower" are positions relative to these references, not judgements
                 of adequacy; councils near a line should be read loosely given survey
                 margins of error.
