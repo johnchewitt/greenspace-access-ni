@@ -26,14 +26,23 @@ function useCountUp(target: number | null, duration = 1100): number | null {
     if (target == null) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const t0 = performance.now();
+    let done = false;
     const tick = (t: number) => {
       const p = reduced ? 1 : Math.min((t - t0) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
       setValue(target * eased);
       if (p < 1) raf.current = requestAnimationFrame(tick);
+      else done = true;
     };
     raf.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf.current);
+    // rAF is suspended in background tabs — never leave a real value stuck at 0
+    const safety = window.setTimeout(() => {
+      if (!done) setValue(target);
+    }, duration + 600);
+    return () => {
+      cancelAnimationFrame(raf.current);
+      window.clearTimeout(safety);
+    };
   }, [target, duration]);
   return value;
 }
