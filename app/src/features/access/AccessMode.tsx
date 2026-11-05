@@ -1,6 +1,6 @@
 import { integrity } from "../../data";
 import { sdzLabels, sdzRamp } from "../../map/renderers";
-import { sdzProvision } from "../../config/services";
+import { sdzVintageByField } from "../../config/services";
 import { Switch } from "../../components/shared";
 import { useAppDispatch, useAppState, type SdzField } from "../../state/AppState";
 import { fmtProvision, type NIProvision } from "../pvp/provision";
@@ -68,7 +68,9 @@ export function AccessPanel({ niProvision }: { niProvision: NIProvision | null }
       </div>
       <p className="legend-note">
         Households within {active.label} of greenspace or trails, per Super Data Zone —{" "}
-        {sdzProvision.note}.
+        {sdzVintageByField[sdzField]} analysis vintage
+        {sdzField === "Percent2km" && " (2 km was not computed in the 2026 analysis, so the latest vintage that includes it is shown)"}
+        .
       </p>
       <span className={`status ${sdzState === "error" ? "err" : ""}`}>
         {sdzState === "loading"
@@ -94,6 +96,14 @@ export function AccessPanel({ niProvision }: { niProvision: NIProvision | null }
             label="Access points (sites ≥ 2 ha)"
           />
           <span>Access points (≥ 2 ha)</span>
+        </div>
+        <div className="layer-row">
+          <Switch
+            checked={layers.settlements}
+            onChange={(on) => dispatch({ type: "layer", layer: "settlements", on })}
+            label="Settlement footprints (OSNI)"
+          />
+          <span>Settlement footprints (OSNI)</span>
         </div>
       </div>
 

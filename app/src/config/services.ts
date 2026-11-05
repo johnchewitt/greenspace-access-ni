@@ -60,8 +60,24 @@ export const sdzProvision: RemoteLayerConfig = {
   url: `${ORNI}/GreenspaceNI_SDZ_Analysis2025/FeatureServer/0`,
   definitionExpression: "Year_ = '2026'",
   verified: "2026-11-04",
-  note: "% of households within 400 m / 1 km / 2 km of greenspace or trails, per SDZ; 2026 analysis vintage",
+  note: "% of households within 400 m / 1 km / 2 km of greenspace or trails, per SDZ",
 };
+
+/**
+ * The SDZ analysis vintage per threshold field. Percent2km is entirely null in
+ * the 2026 vintage (verified live 2026-11-05: 0 of 849 rows), so the 2 km
+ * surface uses the latest vintage that computed it — 2025, where all 850 SDZs
+ * carry a value. Vintages are never mixed within one rendered surface, and the
+ * UI labels the vintage wherever the surface is shown.
+ */
+export const sdzVintageByField = {
+  Percent400: "2026",
+  Percent1km: "2026",
+  Percent2km: "2025",
+} as const;
+
+export const sdzDefinitionFor = (field: keyof typeof sdzVintageByField): string =>
+  `Year_ = '${sdzVintageByField[field]}'`;
 
 /**
  * Published NI-wide provision indicators (one row per analysis year 2023–2026,
@@ -94,6 +110,12 @@ export const osmVectorBasemapItemId = "0df19d2d940b47658857cc2fc9623840";
 /** Local (bundled) assets — no network dependency. */
 export const localData = {
   lgdBoundaries: "data/ni_lgd_joined.geojson",
+  /** OSNI 50k settlement footprints (client-supplied, OSNI Open Data; no name
+   * attribute exists in the source, so this is unlabelled footprint context). */
+  settlements: "data/osni_settlements.json",
+  /** Reference points (median of geocoded unit postcodes) for the published
+   * POMNI postcode geographies — label anchors, never boundaries. */
+  postcodePoints: "data/postcode_points.json",
 };
 
 /** Reserved for future integration (per Stage 1 brief). */

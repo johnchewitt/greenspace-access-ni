@@ -20,8 +20,11 @@ export type Mode =
 
 export type InsightsTab = "dashboard" | "compare" | "opportunities";
 
-export type LayerId = "greenspace" | "trails" | "accessPoints" | "bluespace";
-export type BasemapStyle = "none" | "dark" | "streets";
+/** Explore-map geography: council polygons, or postcode marker geographies. */
+export type Geography = "councils" | "districts" | "sectors";
+
+export type LayerId = "greenspace" | "trails" | "accessPoints" | "bluespace" | "settlements";
+export type BasemapStyle = "none" | "dark" | "greyscale" | "streets";
 export type SdzField = "Percent400" | "Percent1km" | "Percent2km";
 export type ServiceState = "idle" | "loading" | "ok" | "error";
 
@@ -48,6 +51,9 @@ export interface AppState {
   tourStep: number | null;
   /** one-shot request to zoom the map to a Super Data Zone */
   pendingSdzZoom: string | null;
+  geography: Geography;
+  /** selected postcode district/sector code (e.g. "BT20", "BT4 2") */
+  selectedPostcode: string | null;
 }
 
 export type Action =
@@ -67,7 +73,9 @@ export type Action =
   | { type: "insightsTab"; tab: InsightsTab }
   | { type: "report"; open: boolean }
   | { type: "tour"; step: number | null }
-  | { type: "zoomSdz"; code: string | null };
+  | { type: "zoomSdz"; code: string | null }
+  | { type: "geography"; geography: Geography }
+  | { type: "selectPostcode"; code: string | null };
 
 export const initialState: AppState = {
   mode: "overview",
@@ -77,7 +85,7 @@ export const initialState: AppState = {
   selectedCode: null,
   leftOpen: true,
   rightOpen: true,
-  layers: { greenspace: false, trails: false, accessPoints: false, bluespace: false },
+  layers: { greenspace: false, trails: false, accessPoints: false, bluespace: false, settlements: false },
   basemap: "dark",
   sdzOn: false,
   sdzField: "Percent400",
@@ -89,6 +97,8 @@ export const initialState: AppState = {
   reportOpen: false,
   tourStep: null,
   pendingSdzZoom: null,
+  geography: "councils",
+  selectedPostcode: null,
 };
 
 export function reducer(state: AppState, a: Action): AppState {
@@ -120,7 +130,10 @@ export function reducer(state: AppState, a: Action): AppState {
       return {
         ...state,
         selectedCode: a.code,
+        selectedPostcode: null,
         emphasizedCodes: null,
+        // a council selection belongs to the council geography
+        geography: a.code ? "councils" : state.geography,
         rightOpen: a.code ? true : state.rightOpen,
       };
     case "panel":
@@ -151,6 +164,16 @@ export function reducer(state: AppState, a: Action): AppState {
       return { ...state, tourStep: a.step };
     case "zoomSdz":
       return { ...state, pendingSdzZoom: a.code };
+    case "geography":
+      // switching geography retires any selection that no longer fits it
+      return {
+        ...state,
+        geography: a.geography,
+        selectedPostcode: null,
+        selectedCode: a.geography === "councils" ? state.selectedCode : null,
+      };
+    case "selectPostcode":
+      return { ...state, selectedPostcode: a.code, selectedCode: null, emphasizedCodes: null };
   }
 }
 

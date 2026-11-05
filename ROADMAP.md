@@ -144,6 +144,37 @@ Built against the client's Stage 4 brief (A–J):
 Post-demo backlog (unchanged): MOVE NI, postcode boundaries decision, future POMNI
 waves, decile mapping once methodology confirmed, official brand assets once approved.
 
+## Stage 5 — Client datasets & refinements ✅ (delivered 5 Nov 2026)
+
+Built from client-supplied datasets and feedback:
+
+- **Postcode results on the map**: the supplied NI postcode dataset is geocoded unit
+  postcode *points* (61,945 features; 42,796 precise unit-level matches), not polygons —
+  so, honouring the no-approximate-boundaries rule, published POMNI results now render
+  as **markers at postcode reference points** (median of each unit's member postcodes;
+  all 48 districts + 23 sectors resolved, geography spot-checked, coverage asserted by
+  tests). Explore gains a Geography switch (Councils / Districts / Sectors): markers use
+  the same defined class bands as the choropleth, code labels, click-for-profile panels
+  (place, %, index, theme indices, n badge, MoE note, bands framing), search-to-map for
+  postcodes, and a ghosted council layer beneath for context. Reference points are built
+  by `scripts/build_postcode_points.py` (source file not committed).
+- **OSNI settlement footprints**: bundled context layer (1,088 polygons, classed by
+  settlement size, 582 KiB). The source carries no name attribute, so the layer is
+  honest footprint context without labels — labelling needs a named open dataset
+  (flagged to the client).
+- **2 km surface bug (client-reported)**: root cause found live — the 2026 SDZ vintage
+  has no Percent2km values at all (0 of 849 rows; verified by REST query). Each
+  threshold now pins the latest vintage that computed it (2 km → 2025, all 850 SDZs),
+  vintages are never mixed in one surface, and the UI labels the switch explicitly.
+- **Basemap switcher**: greyscale option added (None / Dark / Grey / OSM), all from the
+  single verified keyless OSM source via layer effects.
+- SDK 5.1.27 quirk logged: a client-side FeatureLayer `source` of points paints nothing
+  (features present in the layer view, zero pixels) — postcode markers use a GeoJSONLayer
+  over a Blob URL instead. (Headless-sandbox GL cannot rasterise marker sprites at all,
+  so marker rendering is verified on the live site, not in headless QA.)
+- Quality gate: 48 tests (coverage + bounding-box + state-transition + vintage-pinning
+  additions), tsc, eslint, build, headless QA — green, zero page errors.
+
 ## Risks & dependencies
 
 | Risk | Mitigation |

@@ -86,3 +86,53 @@ describe("stage 4 state", () => {
     expect(s.pendingSdzZoom).toBeNull();
   });
 });
+
+describe("postcode geographies (client-supplied reference points)", () => {
+  it("bundled reference points cover every published district and sector", async () => {
+    const fs = await import("node:fs");
+    const pts = JSON.parse(fs.readFileSync("public/data/postcode_points.json", "utf8"));
+    const { postcodeAreas, postcodeSectors } = await import("../src/data");
+    for (const r of postcodeAreas) {
+      expect(pts.districts[r.postcode_area], r.postcode_area).toBeDefined();
+    }
+    for (const r of postcodeSectors) {
+      expect(pts.sectors[r.postcode_sector], r.postcode_sector).toBeDefined();
+    }
+    expect(Object.keys(pts.districts)).toHaveLength(postcodeAreas.length);
+    expect(Object.keys(pts.sectors)).toHaveLength(postcodeSectors.length);
+  });
+
+  it("every reference point lies inside Northern Ireland's bounding box", async () => {
+    const fs = await import("node:fs");
+    const pts = JSON.parse(fs.readFileSync("public/data/postcode_points.json", "utf8"));
+    const all = [...Object.values(pts.districts), ...Object.values(pts.sectors)] as {
+      pt: [number, number];
+    }[];
+    for (const { pt } of all) {
+      expect(pt[0]).toBeGreaterThan(-8.2);
+      expect(pt[0]).toBeLessThan(-5.3);
+      expect(pt[1]).toBeGreaterThan(54.0);
+      expect(pt[1]).toBeLessThan(55.4);
+    }
+  });
+
+  it("geography switching retires selections that no longer fit", () => {
+    let s = reducer(initialState, { type: "select", code: "N09000003" });
+    s = reducer(s, { type: "geography", geography: "districts" });
+    expect(s.selectedCode).toBeNull();
+    s = reducer(s, { type: "selectPostcode", code: "BT20" });
+    expect(s.selectedPostcode).toBe("BT20");
+    // selecting a council returns to the council geography and clears the postcode
+    s = reducer(s, { type: "select", code: "N09000003" });
+    expect(s.geography).toBe("councils");
+    expect(s.selectedPostcode).toBeNull();
+  });
+
+  it("the 2 km SDZ surface pins the latest vintage that computed it", async () => {
+    const { sdzVintageByField, sdzDefinitionFor } = await import("../src/config/services");
+    expect(sdzVintageByField.Percent400).toBe("2026");
+    expect(sdzVintageByField.Percent1km).toBe("2026");
+    expect(sdzVintageByField.Percent2km).toBe("2025");
+    expect(sdzDefinitionFor("Percent2km")).toBe("Year_ = '2025'");
+  });
+});

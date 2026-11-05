@@ -25,6 +25,7 @@ interface SearchHit {
   label: string;
   detail: string;
   code?: string;
+  pcCode?: string;
 }
 
 function useSearchIndex(): SearchHit[] {
@@ -40,11 +41,13 @@ function useSearchIndex(): SearchHit[] {
         kind: "Postcode area" as const,
         label: `${r.postcode_area} · ${r.place}`,
         detail: fmtPct1(r.total_pct),
+        pcCode: r.postcode_area,
       })),
       ...postcodeSectors.map((r) => ({
         kind: "Postcode sector" as const,
         label: `${r.postcode_sector} · ${r.place}`,
         detail: fmtPct1(r.total_pct),
+        pcCode: r.postcode_sector,
       })),
     ],
     [],
@@ -70,11 +73,14 @@ export function Header() {
     if (h.code) {
       if (mode !== "explore" && mode !== "pvp") dispatch({ type: "mode", mode: "explore" });
       dispatch({ type: "select", code: h.code });
-    } else {
-      // Postcode geographies have no open-licence boundaries — their results
-      // live in the chart-first comparison views.
-      dispatch({ type: "mode", mode: "insights" });
-      dispatch({ type: "insightsTab", tab: "compare" });
+    } else if (h.pcCode) {
+      // Postcode results render as markers at reference points on the Explore map.
+      if (mode !== "explore") dispatch({ type: "mode", mode: "explore" });
+      dispatch({
+        type: "geography",
+        geography: h.kind === "Postcode area" ? "districts" : "sectors",
+      });
+      dispatch({ type: "selectPostcode", code: h.pcCode });
     }
   };
 
@@ -157,8 +163,8 @@ export function Header() {
                 </button>
               ))}
               <p className="legend-note" style={{ padding: "4px 10px" }}>
-                Postcode geographies are reported without boundaries — see INSIGHTS ·
-                Comparisons for their results.
+                Postcode results map as markers at reference points — no open-licence
+                boundaries exist.
               </p>
             </div>
           )}

@@ -18,7 +18,7 @@ import {
   type ProvisionAttrs,
   type ProvisionRecord,
 } from "./provision";
-import { allNIAnalysis, councilProvision2025, outscapeLayers, sdzProvision } from "../../config/services";
+import { allNIAnalysis, councilProvision2025, outscapeLayers, sdzVintageByField } from "../../config/services";
 import { useAppDispatch, useAppState } from "../../state/AppState";
 import { SampleSizeBadge, Switch } from "../../components/shared";
 import { sdzLabels, sdzRamp } from "../../map/renderers";
@@ -269,9 +269,12 @@ export function ProvisionPanel({
           </div>
           <p className="legend-note">
             Households within {sdzField === "Percent400" ? "400 m" : sdzField === "Percent1km" ? "1 km" : "2 km"} of
-            greenspace or trails, per Super Data Zone — {sdzProvision.note}. These are
-            published network-derived indicators; no live walking service-area (isochrone)
-            analysis is available, so no travel-time zones are drawn.
+            greenspace or trails, per Super Data Zone — {sdzVintageByField[sdzField]}{" "}
+            analysis vintage
+            {sdzField === "Percent2km" &&
+              " (2 km was not computed in the 2026 analysis, so the latest vintage that includes it is shown)"}
+            . These are published network-derived indicators; no live walking service-area
+            (isochrone) analysis is available, so no travel-time zones are drawn.
           </p>
         </>
       )}

@@ -45,6 +45,37 @@ export function buildRenderer(metric: MetricId, format: FormatId): ClassBreaksRe
   });
 }
 
+/**
+ * Postcode geographies have no open-licence boundaries, so published results
+ * render as MARKERS at postcode reference points — the same defined class
+ * breaks and ramp as the council choropleth, on circles instead of fills.
+ * Returned as an autocast object (constructed ClassBreaksRenderer instances
+ * fail silently on FeatureLayer in SDK 5.1.27 — see buildSdzRenderer).
+ */
+export function buildPointRenderer(metric: MetricId, format: FormatId): ClassBreaksRenderer {
+  const useIndex = metric !== "total" || format === "index";
+  const breaks = useIndex ? indexBreaks : pctBreaks;
+  const ramp = useIndex ? divRamp : seqRamp;
+  const labels = useIndex ? indexClassLabels : pctClassLabels;
+  const edges = [-Infinity, ...breaks, Infinity];
+  return {
+    type: "class-breaks",
+    field: metricField(metric, format),
+    classBreakInfos: ramp.map((color, i) => ({
+      minValue: edges[i] === -Infinity ? -9999 : edges[i],
+      maxValue: edges[i + 1] === Infinity ? 9999 : edges[i + 1] - 0.000001,
+      symbol: {
+        type: "simple-marker",
+        style: "circle",
+        size: 11,
+        color,
+        outline: { color: "rgba(8, 29, 40, 0.95)", width: 1.4 },
+      },
+      label: labels[i],
+    })),
+  } as unknown as ClassBreaksRenderer;
+}
+
 /** % of households within 400 m of greenspace/trails — blue sequential, 0–100. */
 export const sdzRamp = ["#17303F", "#1E4A66", "#2A6A92", "#3E93C4", "#7FAEF5"];
 export const sdzBreaks = [20, 40, 60, 80];

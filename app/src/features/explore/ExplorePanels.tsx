@@ -5,14 +5,17 @@ import {
   THEME_SHORT,
   LGD_DISPLAY,
   fmtIndex,
+  fmtIndexInt,
   fmtPct,
   fmtPct1,
   lgdByCode,
   ni,
+  postcodeAreas,
+  postcodeSectors,
   type MetricId,
 } from "../../data";
 import { themeSeries } from "../../config/branding";
-import { useAppDispatch, useAppState, type LayerId } from "../../state/AppState";
+import { useAppDispatch, useAppState, type Geography, type LayerId } from "../../state/AppState";
 import { FormatToggle, MapLegend, SampleSizeBadge, Switch, UncertaintyNote } from "../../components/shared";
 import { Chart } from "../../charts/Chart";
 import { areaThemesOption } from "../../charts/options";
@@ -23,12 +26,19 @@ const LAYERS: { id: LayerId; label: string }[] = [
   { id: "trails", label: "Off-road trails" },
   { id: "accessPoints", label: "Access points" },
   { id: "bluespace", label: "Bluespace (early-stage)" },
+  { id: "settlements", label: "Settlement footprints (OSNI)" },
+];
+
+const GEOGRAPHIES: { id: Geography; label: string; hint: string }[] = [
+  { id: "councils", label: "Councils", hint: "11 council areas (boundaries)" },
+  { id: "districts", label: "Districts", hint: "48 published BT postcode districts (markers)" },
+  { id: "sectors", label: "Sectors", hint: "23 published BT postcode sectors (markers)" },
 ];
 
 export function LeftPanel() {
   const state = useAppState();
   const dispatch = useAppDispatch();
-  const { metric, format, leftOpen, layers, basemap, serviceStatus } = state;
+  const { metric, format, leftOpen, layers, basemap, serviceStatus, geography } = state;
 
   return (
     <>
@@ -42,6 +52,26 @@ export function LeftPanel() {
         </button>
       )}
       <div className={`panel-left ${leftOpen ? "" : "collapsed"}`}>
+        <section className="panel-section glass">
+          <h2 className="section-label">Geography</h2>
+          <div className="format-toggle" role="group" aria-label="Map geography">
+            {GEOGRAPHIES.map((g) => (
+              <button
+                key={g.id}
+                aria-pressed={geography === g.id}
+                onClick={() => dispatch({ type: "geography", geography: g.id })}
+                title={g.hint}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+          <p className="format-hint">
+            {geography === "councils"
+              ? "11 councils as boundaries."
+              : `Published ${geography === "districts" ? "48 postcode districts" : "23 postcode sectors"} as markers at postcode reference points — no open-licence NI postcode boundaries exist, so none are drawn.`}
+          </p>
+        </section>
         <section className="panel-section glass">
           <h2 className="section-label">
             Theme
@@ -97,7 +127,9 @@ export function LeftPanel() {
             );
           })}
           <p className="legend-note">
-            Live from Outscape's Greenspace NI Map services. {outscapeLayers.bluespace.note}.
+            Live from Outscape's Greenspace NI Map services ({outscapeLayers.bluespace.note});
+            settlement footprints are bundled OSNI Open Data (unnamed in the source, so
+            shown without labels).
           </p>
         </section>
 
@@ -110,21 +142,16 @@ export function LeftPanel() {
           </h2>
           <div className="format-toggle" role="group" aria-label="Map backdrop">
             {([
-              ["none", "None"],
-              ["dark", "Dark"],
-              ["streets", "Streets"],
-            ] as const).map(([id, label]) => (
+              ["none", "None", "Index canvas only"],
+              ["dark", "Dark", "Muted OpenStreetMap backdrop"],
+              ["greyscale", "Grey", "Light greyscale OpenStreetMap backdrop"],
+              ["streets", "OSM", "OpenStreetMap backdrop"],
+            ] as const).map(([id, label, hint]) => (
               <button
                 key={id}
                 aria-pressed={basemap === id}
                 onClick={() => dispatch({ type: "basemap", style: id })}
-                title={
-                  id === "none"
-                    ? "Index canvas only"
-                    : id === "dark"
-                      ? "Muted OpenStreetMap backdrop"
-                      : "OpenStreetMap backdrop"
-                }
+                title={hint}
               >
                 {label}
               </button>
@@ -170,14 +197,76 @@ export function KpiStrip() {
   );
 }
 
+function PostcodePanel({ code }: { code: string }) {
+  const { rightOpen } = useAppState();
+  const dispatch = useAppDispatch();
+  const district = postcodeAreas.find((r) => r.postcode_area === code);
+  const sector = district ? undefined : postcodeSectors.find((r) => r.postcode_sector === code);
+  const rec = district ?? sector;
+  if (!rec) return null;
+  const kindLabel = district ? "Postcode district" : "Postcode sector";
+  return (
+    <div className={`panel-right ${rightOpen ? "" : "collapsed"}`}>
+      <section className="panel-section glass" aria-label={`${code} profile`}>
+        <h2 className="section-label">{kindLabel}</h2>
+        <h3 className="area-name">
+          {code} <span style={{ color: "var(--gani-ink-3)", fontWeight: 500 }}>· {rec.place}</span>
+        </h3>
+        <SampleSizeBadge n={rec.sample_n} />
+        <div className="big-pair" style={{ marginTop: 8 }}>
+          <div>
+            <div className="n" style={{ color: "var(--gani-turquoise)" }}>{fmtPct1(rec.total_pct)}</div>
+            <div className="cap">overall · % of maximum</div>
+          </div>
+          <div>
+            <div className="n" style={{ color: "var(--gani-gold)" }}>{fmtIndex(rec.total_index)}</div>
+            <div className="cap">index · NI average = 100</div>
+          </div>
+        </div>
+        <table className="rank-table" style={{ marginTop: 10 }}>
+          <tbody>
+            {THEME_ORDER.map((t) => (
+              <tr key={t}>
+                <td>
+                  <i className="dot" style={{ background: themeSeries[t], width: 8, height: 8, borderRadius: "50%", display: "inline-block", marginRight: 7 }} />
+                  {THEME_SHORT[t]}
+                </td>
+                <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums", fontWeight: 700 }}>
+                  {fmtIndexInt(rec.themes_index[t])}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <UncertaintyNote />
+        <p className="format-hint" style={{ marginTop: 8 }}>
+          Marker placed at the postcode's reference point (median of its unit postcodes) —
+          postcode boundaries are not drawn because none exist under an open licence.
+          Scores shown in bands; small differences between areas are not meaningful at
+          these sample sizes.
+        </p>
+        <button
+          className="kpi-card"
+          style={{ width: "100%", marginTop: 8, textAlign: "center", minWidth: 0 }}
+          onClick={() => dispatch({ type: "selectPostcode", code: null })}
+        >
+          <span style={{ font: "700 12px var(--gani-font-ui)", color: "var(--gani-ink-2)" }}>Clear selection</span>
+        </button>
+      </section>
+    </div>
+  );
+}
+
 export function AreaPanel() {
-  const { selectedCode, rightOpen } = useAppState();
+  const { selectedCode, selectedPostcode, rightOpen } = useAppState();
   const dispatch = useAppDispatch();
   const record = selectedCode ? lgdByCode[selectedCode] : null;
   const option = useMemo(
     () => (selectedCode ? areaThemesOption(selectedCode) : null),
     [selectedCode],
   );
+
+  if (selectedPostcode) return <PostcodePanel code={selectedPostcode} />;
 
   if (!record || !selectedCode) {
     return (

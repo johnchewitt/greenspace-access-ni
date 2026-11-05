@@ -51,9 +51,12 @@ export function AboutMode() {
               copied or re-hosted, and figures reflect the services at view time.
             </li>
             <li>
-              <b>Boundaries:</b> council boundaries derived from OSNI Open Data; no
-              open-licence postcode polygons exist for Northern Ireland, so postcode results
-              are shown as charts, never as approximate boundaries.
+              <b>Boundaries &amp; reference geography:</b> council boundaries and settlement
+              footprints derived from OSNI Open Data. No open-licence postcode polygons
+              exist for Northern Ireland, so postcode results are shown as charts and as{" "}
+              <b>markers at postcode reference points</b> (the median position of each
+              district's or sector's geocoded unit postcodes, from a client-supplied
+              dataset) — approximate boundaries are never drawn.
             </li>
           </ul>
           <h3>What the walking thresholds mean</h3>

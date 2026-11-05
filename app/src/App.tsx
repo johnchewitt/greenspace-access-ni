@@ -5,6 +5,7 @@ import { MapControls } from "./components/MapControls";
 import { Tour, tourAlreadySeen } from "./components/Tour";
 import { IntegrityChip } from "./components/shared";
 import { AreaPanel, KpiStrip, LeftPanel } from "./features/explore/ExplorePanels";
+import { usePostcodePoints } from "./features/explore/usePostcodePoints";
 import { AboutMode } from "./features/about/AboutMode";
 import { AccessPanel } from "./features/access/AccessMode";
 import { InsightsHub } from "./features/insights/InsightsHub";
@@ -22,6 +23,7 @@ import {
 import { EvidenceDrawer } from "./features/pvp/EvidenceDrawer";
 import { MapHost } from "./map/MapHost";
 import { CouncilLabels } from "./map/CouncilLabels";
+import { PostcodeLabels } from "./map/PostcodeLabels";
 import { MapTooltip } from "./map/MapTooltip";
 import { MapController } from "./map/MapController";
 import { useViewSync } from "./map/useViewSync";
@@ -31,12 +33,12 @@ import {
   type LayerId,
 } from "./state/AppState";
 
-const LAYER_IDS: LayerId[] = ["greenspace", "trails", "accessPoints", "bluespace"];
+const LAYER_IDS: LayerId[] = ["greenspace", "trails", "accessPoints", "bluespace", "settlements"];
 
 export default function App() {
   const state = useAppState();
   const dispatch = useAppDispatch();
-  const { mode, metric, format, selectedCode, layers, basemap, sdzOn, sdzField, emphasizedCodes, pvpOpened, pendingSdzZoom } = state;
+  const { mode, metric, format, selectedCode, selectedPostcode, geography, layers, basemap, sdzOn, sdzField, emphasizedCodes, pvpOpened, pendingSdzZoom } = state;
 
   // dispatch from useReducer is stable, so both controllers are created once.
   const mainCtl = useMemo(
@@ -62,9 +64,11 @@ export default function App() {
     const handler = (code: string | null) => dispatch({ type: "select", code });
     mainCtl.setOnSelect(handler);
     rightCtl.setOnSelect(handler);
+    mainCtl.setOnSelectPostcode((code) => dispatch({ type: "selectPostcode", code }));
     return () => {
       mainCtl.setOnSelect(null);
       rightCtl.setOnSelect(null);
+      mainCtl.setOnSelectPostcode(null);
     };
   }, [mainCtl, rightCtl, dispatch]);
 
@@ -77,7 +81,36 @@ export default function App() {
   // Metric/format → choropleth renderer (main map only; right map is outline reference)
   useEffect(() => {
     mainCtl.setRenderer(metric, format);
+    mainCtl.setPostcodeRenderer(metric, format);
   }, [metric, format, mainCtl]);
+
+  // Postcode marker geographies: published results at reference points.
+  const pcActive = mode === "explore" && geography !== "councils";
+  const pcRows = usePostcodePoints(pcActive || selectedPostcode != null);
+  useEffect(() => {
+    if (!pcRows || pcRows.length === 0) return;
+    const t = window.setInterval(() => {
+      if (mainCtl.view) {
+        window.clearInterval(t);
+        mainCtl.setPostcodeData(pcRows);
+        mainCtl.setPostcodeRenderer(metric, format);
+        mainCtl.setPostcodeGeography(pcActive ? (geography as "districts" | "sectors") : null);
+      }
+    }, 150);
+    return () => window.clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pcRows, mainCtl]);
+  useEffect(() => {
+    mainCtl.setPostcodeGeography(pcActive ? (geography as "districts" | "sectors") : null);
+    mainCtl.setChoroplethDimmed(pcActive);
+  }, [pcActive, geography, mainCtl]);
+  useEffect(() => {
+    if (selectedPostcode && geography !== "councils") {
+      mainCtl.selectPostcode(selectedPostcode, geography as "districts" | "sectors", true);
+    } else if (!selectedCode) {
+      mainCtl.selectPostcode(null, "districts", false);
+    }
+  }, [selectedPostcode, geography, selectedCode, mainCtl]);
 
   // PvP lifecycle: second map mounts on first entry; style it as provision reference
   useEffect(() => {
@@ -180,7 +213,13 @@ export default function App() {
       <main className="app-main">
         <div className={`map-stage ${mode === "pvp" ? "split" : ""}`}>
           <MapHost controller={mainCtl} label="Greenspace Index map of Northern Ireland">
-            <CouncilLabels controller={mainCtl} visible={mode === "explore" || mode === "pvp" || mode === "story"} />
+            <CouncilLabels controller={mainCtl} visible={(mode === "explore" && geography === "councils") || mode === "pvp" || mode === "story"} />
+            <PostcodeLabels
+              controller={mainCtl}
+              rows={pcRows}
+              kind={geography === "sectors" ? "sectors" : "districts"}
+              visible={pcActive}
+            />
             <MapTooltip controller={mainCtl} />
           </MapHost>
           {pvpOpened && (

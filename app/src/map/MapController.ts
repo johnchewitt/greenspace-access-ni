@@ -7,6 +7,7 @@ import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Graphic from "@arcgis/core/Graphic";
 import Extent from "@arcgis/core/geometry/Extent";
+import Point from "@arcgis/core/geometry/Point";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import { geographicToWebMercator } from "@arcgis/core/geometry/support/webMercatorUtils";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
@@ -17,15 +18,17 @@ import FeatureFilter from "@arcgis/core/layers/support/FeatureFilter";
 import FeatureEffect from "@arcgis/core/layers/support/FeatureEffect";
 import type MapView from "@arcgis/core/views/MapView";
 import type Layer from "@arcgis/core/layers/Layer";
+import type UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
 import type Geometry from "@arcgis/core/geometry/Geometry";
 
 
 import type { FormatId, MetricId } from "../data";
-import { buildRenderer, buildSdzRenderer } from "./renderers";
+import { buildPointRenderer, buildRenderer, buildSdzRenderer } from "./renderers";
 import {
   localData,
   osmVectorBasemapItemId,
   outscapeLayers,
+  sdzDefinitionFor,
   sdzProvision,
   type RemoteLayerConfig,
 } from "../config/services";
@@ -62,6 +65,29 @@ function watchLayerStatus(layer: Layer, id: string, onStatus: StatusCb) {
     .load()
     .then(() => onStatus(id, "ok"))
     .catch(() => onStatus(id, "error"));
+}
+
+export interface PostcodePointRow {
+  kind: "districts" | "sectors";
+  code: string;
+  place: string;
+  lon: number;
+  lat: number;
+  n: number;
+  total_pct: number;
+  total_index: number;
+  idx_at: number;
+  idx_aw: number;
+  idx_q: number;
+  idx_b: number;
+}
+
+/** Faint cream wash + hairline for settlement footprints over the dark theme. */
+function settlementSymbol(fillAlpha: number, lineWidth: number): SimpleFillSymbol {
+  return new SimpleFillSymbol({
+    color: [242, 244, 233, Math.round(fillAlpha * 255) / 255],
+    outline: new SimpleLineSymbol({ color: [242, 244, 233, 0.4], width: lineWidth }),
+  });
 }
 
 function makeRemoteLayer(cfg: RemoteLayerConfig): FeatureLayer {
@@ -120,10 +146,11 @@ export class MapController {
   view: MapView | null = null;
   lgdLayer: GeoJSONLayer;
   selectionLayer = new GraphicsLayer({ listMode: "hide" });
-  remote: Record<LayerId, FeatureLayer>;
+  remote: Record<LayerId, FeatureLayer | GeoJSONLayer>;
   basemapLayer: VectorTileLayer | null = null;
   sdzLayer: FeatureLayer | null = null;
   private geometriesByCode = new globalThis.Map<string, Geometry>();
+  private choroplethDimmed = false;
   private hoverCode: string | null = null;
   onSelect: ((code: string | null) => void) | null = null;
   onHover: ((code: string | null, x: number, y: number) => void) | null = null;
@@ -151,10 +178,30 @@ export class MapController {
       trails: makeRemoteLayer(outscapeLayers.trails),
       accessPoints: makeRemoteLayer(outscapeLayers.accessPoints),
       bluespace: makeRemoteLayer(outscapeLayers.bluespace),
+      // Bundled OSNI 50k settlement footprints — unlabelled context (the
+      // source carries no name attribute), classed by settlement size.
+      settlements: new GeoJSONLayer({
+        url: `${import.meta.env.BASE_URL}${localData.settlements}`,
+        title: "Settlement footprints (OSNI 50k)",
+        copyright: "OSNI Open Data",
+        popupEnabled: false,
+        visible: false,
+        renderer: {
+          type: "unique-value",
+          field: "cls",
+          uniqueValueInfos: [
+            { value: "LRG_TOWN", symbol: settlementSymbol(0.1, 1.1) },
+            { value: "TOWN", symbol: settlementSymbol(0.09, 0.9) },
+            { value: "VILLAGE", symbol: settlementSymbol(0.07, 0.7) },
+            { value: "SMALL_VILL", symbol: settlementSymbol(0.05, 0.5) },
+          ],
+        } as unknown as UniqueValueRenderer,
+      }),
     };
-    (Object.keys(this.remote) as LayerId[]).forEach((id) =>
-      styleRemote(id, this.remote[id]),
-    );
+    (Object.keys(this.remote) as LayerId[]).forEach((id) => {
+      const layer = this.remote[id];
+      if (id !== "settlements" && layer instanceof FeatureLayer) styleRemote(id, layer);
+    });
   }
 
   /** Attach to an <arcgis-map> element's ready view. */
@@ -167,6 +214,7 @@ export class MapController {
     view.map = new EsriMap({
       layers: [
         this.lgdLayer,
+        this.remote.settlements,
         this.remote.greenspace,
         this.remote.trails,
         this.remote.bluespace,
@@ -196,11 +244,21 @@ export class MapController {
       .catch(() => undefined);
 
     view.on("click", async (e) => {
-      const hit = await view.hitTest(e, { include: [this.lgdLayer] });
-      const g = hit.results.find((r) => r.type === "graphic") as
-        | { graphic: Graphic }
-        | undefined;
-      this.onSelect?.(g ? (g.graphic.attributes.code as string) : null);
+      const include: Layer[] = [this.lgdLayer];
+      if (this.postcodeLayer?.visible) include.push(this.postcodeLayer);
+      const hit = await view.hitTest(e, { include });
+      const graphics = hit.results.filter((r) => r.type === "graphic") as { graphic: Graphic }[];
+      const pc = graphics.find((g) => g.graphic.layer === this.postcodeLayer);
+      if (pc) {
+        this.onSelectPostcode?.(pc.graphic.attributes.code as string);
+        return;
+      }
+      // with postcode markers up, empty clicks clear the postcode selection
+      if (this.postcodeLayer?.visible) {
+        this.onSelectPostcode?.(null);
+        return;
+      }
+      this.onSelect?.(graphics.length ? (graphics[0].graphic.attributes.code as string) : null);
     });
 
     let moveFrame = 0;
@@ -208,6 +266,19 @@ export class MapController {
       if (moveFrame) return;
       moveFrame = requestAnimationFrame(async () => {
         moveFrame = 0;
+        // With postcode markers up, the council tooltip would mislead (clicks
+        // select markers, not councils) — offer a pointer only over markers.
+        if (this.postcodeLayer?.visible) {
+          if (this.hoverCode) {
+            this.hoverCode = null;
+            this.onHover?.(null, 0, 0);
+          }
+          const pcHit = await view.hitTest(e, { include: [this.postcodeLayer] });
+          view.container!.style.cursor = pcHit.results.some((r) => r.type === "graphic")
+            ? "pointer"
+            : "default";
+          return;
+        }
         if (!this.lgdLayer.visible) return;
         const hit = await view.hitTest(e, { include: [this.lgdLayer] });
         const g = hit.results.find((r) => r.type === "graphic") as
@@ -308,16 +379,25 @@ export class MapController {
       if (style === "dark") {
         this.basemapLayer.effect = "grayscale(0.8) brightness(0.5) contrast(1.05)";
         this.basemapLayer.opacity = 0.75;
+      } else if (style === "greyscale") {
+        this.basemapLayer.effect = "grayscale(1) brightness(1.08)";
+        this.basemapLayer.opacity = 0.9;
       } else if (style === "streets") {
         this.basemapLayer.effect = "saturate(0.85)";
         this.basemapLayer.opacity = 0.85;
       }
     }
-    this.lgdLayer.opacity = style === "none" ? 1 : 0.85;
+    this.lgdLayer.opacity = this.choroplethDimmed ? 0.25 : style === "none" ? 1 : 0.85;
   }
 
   setChoroplethVisible(on: boolean) {
     this.lgdLayer.visible = on;
+  }
+
+  /** Ghost the council fills so marker geographies read on top. */
+  setChoroplethDimmed(on: boolean) {
+    this.choroplethDimmed = on;
+    this.lgdLayer.opacity = on ? 0.25 : this.basemapLayer?.visible ? 0.85 : 1;
   }
 
   /**
@@ -344,7 +424,109 @@ export class MapController {
   }
 
   setSdzField(field: "Percent400" | "Percent1km" | "Percent2km") {
-    if (this.sdzLayer) this.sdzLayer.renderer = buildSdzRenderer(field);
+    if (!this.sdzLayer) return;
+    this.sdzLayer.renderer = buildSdzRenderer(field);
+    // The 2026 vintage has no 2 km values at SDZ level, so each threshold pins
+    // the latest vintage that computed it (see sdzVintageByField) — otherwise
+    // the 2 km surface would render nothing.
+    this.sdzLayer.definitionExpression = sdzDefinitionFor(field);
+  }
+
+  // ——— Postcode marker geographies (no open-licence boundaries exist, so
+  // published results render as markers at reference points, never polygons).
+  postcodeLayer: GeoJSONLayer | null = null;
+  private postcodeAnchors = new globalThis.Map<string, Point>();
+  private onSelectPostcode: ((code: string | null) => void) | null = null;
+
+  setOnSelectPostcode(cb: ((code: string | null) => void) | null) {
+    this.onSelectPostcode = cb;
+  }
+
+  /**
+   * Build the marker layer once from joined published results. A GeoJSONLayer
+   * over a Blob URL, not a client-side FeatureLayer source: in SDK 5.1.27 the
+   * latter silently paints nothing (48 features in the layer view, zero
+   * pixels, even with a flat SimpleRenderer) — the same family of quirk as
+   * the constructed-ClassBreaksRenderer failure documented in renderers.ts.
+   */
+  setPostcodeData(rows: PostcodePointRow[]) {
+    if (this.postcodeLayer || !this.view) return;
+    rows.forEach((r) => {
+      this.postcodeAnchors.set(
+        r.code,
+        geographicToWebMercator(
+          new Point({ longitude: r.lon, latitude: r.lat, spatialReference: SpatialReference.WGS84 }),
+        ) as Point,
+      );
+    });
+    const fc = {
+      type: "FeatureCollection",
+      features: rows.map((r) => ({
+        type: "Feature",
+        properties: {
+          kind: r.kind,
+          code: r.code,
+          place: r.place,
+          n: r.n,
+          total_pct: r.total_pct,
+          total_index: r.total_index,
+          idx_at: r.idx_at,
+          idx_aw: r.idx_aw,
+          idx_q: r.idx_q,
+          idx_b: r.idx_b,
+        },
+        geometry: { type: "Point", coordinates: [r.lon, r.lat] },
+      })),
+    };
+    this.postcodeLayer = new GeoJSONLayer({
+      url: URL.createObjectURL(new Blob([JSON.stringify(fc)], { type: "application/json" })),
+      title: "Postcode results (reference points)",
+      copyright: "Published POMNI 2025 results at postcode reference points",
+      popupEnabled: false,
+      visible: false,
+      renderer: buildPointRenderer("total", "pct"),
+    });
+    // above the choropleth and context layers, below the selection halo
+    this.view.map?.layers.add(this.postcodeLayer, this.view.map.layers.indexOf(this.selectionLayer));
+  }
+
+  setPostcodeGeography(kind: "districts" | "sectors" | null) {
+    if (!this.postcodeLayer) return;
+    this.postcodeLayer.visible = kind !== null;
+    if (kind) this.postcodeLayer.definitionExpression = `kind = '${kind}'`;
+  }
+
+  setPostcodeRenderer(metric: MetricId, format: FormatId) {
+    if (this.postcodeLayer) this.postcodeLayer.renderer = buildPointRenderer(metric, format);
+  }
+
+  /** Gold halo + zoom for a selected postcode reference point. */
+  selectPostcode(code: string | null, kind: "districts" | "sectors", zoom = true) {
+    this.selectionLayer.removeAll();
+    const view = this.view;
+    if (!view || !code) return;
+    const pt = this.postcodeAnchors.get(code);
+    if (!pt) return;
+    this.selectionLayer.add(
+      new Graphic({
+        geometry: pt,
+        symbol: new SimpleMarkerSymbol({
+          style: "circle",
+          size: 20,
+          color: [226, 183, 107, 0.12],
+          outline: { color: palette.gold, width: 2.2 },
+        }),
+      }),
+    );
+    if (zoom) {
+      const scale = kind === "districts" ? 220000 : 100000;
+      if (!prefersReducedMotion()) {
+        view.goTo({ target: pt, scale }, { duration: 800, easing: "ease-in-out" }).catch(() => undefined);
+      } else {
+        view.center = pt;
+        view.scale = scale;
+      }
+    }
   }
 
   /** Zoom to one Super Data Zone on the provision surface (by SDZ_Code). */
