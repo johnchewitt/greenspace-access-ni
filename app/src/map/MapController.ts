@@ -347,6 +347,30 @@ export class MapController {
     if (this.sdzLayer) this.sdzLayer.renderer = buildSdzRenderer(field);
   }
 
+  /** Zoom to one Super Data Zone on the provision surface (by SDZ_Code). */
+  async zoomToSdz(code: string) {
+    const view = this.view;
+    if (!view || !this.sdzLayer) return;
+    try {
+      const fs = await this.sdzLayer.queryFeatures({
+        where: `SDZ_Code = '${code.replace(/'/g, "''")}' AND ${sdzProvision.definitionExpression}`,
+        returnGeometry: true,
+        outFields: ["SDZ_Name"],
+        outSpatialReference: view.spatialReference,
+      } as unknown as Parameters<FeatureLayer["queryFeatures"]>[0]);
+      const geom = fs.features[0]?.geometry;
+      if (!geom?.extent) return;
+      const target = geom.extent.clone().expand(5);
+      if (!prefersReducedMotion()) {
+        await view.goTo(target, { duration: 800, easing: "ease-in-out" }).catch(() => undefined);
+      } else {
+        view.extent = target;
+      }
+    } catch {
+      /* zoom is a convenience — never fatal */
+    }
+  }
+
   /**
    * Emphasise a set of councils (quadrant filtering): others fade. Kept
    * separate from single-council selection; selection wins when active.

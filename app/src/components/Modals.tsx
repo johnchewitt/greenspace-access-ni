@@ -91,10 +91,13 @@ export function AboutModal() {
       </p>
       <h3>Using the app</h3>
       <ul>
+        <li><b>Overview</b> — the headline evidence and a route into every view.</li>
         <li><b>Explore</b> — the index across Northern Ireland's 11 councils; switch theme and score format, select a council for its profile.</li>
-        <li><b>Understand</b> — how the index is built from POMNI questions, and what it does and doesn't measure.</li>
-        <li><b>Compare</b> — all 11 councils side by side, plus demographic patterns.</li>
+        <li><b>Standards</b> — how the index is built from POMNI questions, and what it does and doesn't measure.</li>
+        <li><b>Accessibility</b> — household walking access at 400 m, 1 km and 2 km.</li>
+        <li><b>Insights</b> — dashboards, comparisons and opportunity screening.</li>
         <li><b>Perception vs Provision</b> — what residents experience alongside what the map shows, geographically synchronised.</li>
+        <li><b>Story</b> — a guided, six-chapter walk through the evidence.</li>
       </ul>
       <h3>Attribution</h3>
       <p style={{ fontSize: 12 }}>

@@ -268,6 +268,16 @@ export function AreaPanel() {
               Compare with what the map shows →
             </span>
           </button>
+          <button
+            className="kpi-card"
+            style={{ width: "100%", marginTop: 8, textAlign: "center", minWidth: 0 }}
+            onClick={() => dispatch({ type: "report", open: true })}
+            title={`Generate a branded evidence summary for ${LGD_DISPLAY[selectedCode]}`}
+          >
+            <span style={{ font: "700 12px var(--gani-font-ui)", color: "var(--gani-turquoise)" }}>
+              Create report (PDF)
+            </span>
+          </button>
         </section>
       </div>
     </>

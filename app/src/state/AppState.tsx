@@ -8,7 +8,17 @@ import {
 } from "react";
 import type { FormatId, MetricId } from "../data";
 
-export type Mode = "explore" | "insights" | "understand" | "compare" | "pvp" | "story";
+export type Mode =
+  | "overview"
+  | "explore"
+  | "understand"
+  | "access"
+  | "insights"
+  | "pvp"
+  | "story"
+  | "about";
+
+export type InsightsTab = "dashboard" | "compare" | "opportunities";
 
 export type LayerId = "greenspace" | "trails" | "accessPoints" | "bluespace";
 export type BasemapStyle = "none" | "dark" | "streets";
@@ -33,6 +43,11 @@ export interface AppState {
   serviceStatus: Record<string, ServiceState>;
   infoOpen: boolean;
   methodologyOpen: boolean;
+  insightsTab: InsightsTab;
+  reportOpen: boolean;
+  tourStep: number | null;
+  /** one-shot request to zoom the map to a Super Data Zone */
+  pendingSdzZoom: string | null;
 }
 
 export type Action =
@@ -48,10 +63,14 @@ export type Action =
   | { type: "emphasize"; codes: string[] | null }
   | { type: "service"; id: string; state: ServiceState }
   | { type: "info"; open: boolean }
-  | { type: "methodology"; open: boolean };
+  | { type: "methodology"; open: boolean }
+  | { type: "insightsTab"; tab: InsightsTab }
+  | { type: "report"; open: boolean }
+  | { type: "tour"; step: number | null }
+  | { type: "zoomSdz"; code: string | null };
 
 export const initialState: AppState = {
-  mode: "explore",
+  mode: "overview",
   pvpOpened: false,
   metric: "total",
   format: "pct",
@@ -66,6 +85,10 @@ export const initialState: AppState = {
   serviceStatus: {},
   infoOpen: false,
   methodologyOpen: false,
+  insightsTab: "dashboard",
+  reportOpen: false,
+  tourStep: null,
+  pendingSdzZoom: null,
 };
 
 export function reducer(state: AppState, a: Action): AppState {
@@ -80,6 +103,9 @@ export function reducer(state: AppState, a: Action): AppState {
       } else {
         next.emphasizedCodes = null;
       }
+      // The Accessibility explorer's whole point is the household-proximity
+      // surface, so entering it turns the surface on.
+      if (a.mode === "access") next.sdzOn = true;
       return next;
     }
     case "metric": {
@@ -117,6 +143,14 @@ export function reducer(state: AppState, a: Action): AppState {
       return { ...state, infoOpen: a.open };
     case "methodology":
       return { ...state, methodologyOpen: a.open };
+    case "insightsTab":
+      return { ...state, insightsTab: a.tab };
+    case "report":
+      return { ...state, reportOpen: a.open };
+    case "tour":
+      return { ...state, tourStep: a.step };
+    case "zoomSdz":
+      return { ...state, pendingSdzZoom: a.code };
   }
 }
 

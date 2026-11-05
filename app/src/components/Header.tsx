@@ -9,13 +9,15 @@ import {
 } from "../data";
 import { useAppDispatch, useAppState, type Mode } from "../state/AppState";
 
-const MODES: { id: Mode; label: string; signature?: boolean }[] = [
+const MODES: { id: Mode; label: string; short?: string; signature?: boolean }[] = [
+  { id: "overview", label: "OVERVIEW" },
   { id: "explore", label: "EXPLORE" },
+  { id: "understand", label: "STANDARDS" },
+  { id: "access", label: "ACCESSIBILITY", short: "ACCESS" },
   { id: "insights", label: "INSIGHTS" },
-  { id: "understand", label: "UNDERSTAND" },
-  { id: "compare", label: "COMPARE" },
-  { id: "pvp", label: "PERCEPTION VS PROVISION", signature: true },
+  { id: "pvp", label: "PERCEPTION VS PROVISION", short: "PERCEPTION", signature: true },
   { id: "story", label: "STORY", signature: true },
+  { id: "about", label: "ABOUT" },
 ];
 
 interface SearchHit {
@@ -68,6 +70,11 @@ export function Header() {
     if (h.code) {
       if (mode !== "explore" && mode !== "pvp") dispatch({ type: "mode", mode: "explore" });
       dispatch({ type: "select", code: h.code });
+    } else {
+      // Postcode geographies have no open-licence boundaries — their results
+      // live in the chart-first comparison views.
+      dispatch({ type: "mode", mode: "insights" });
+      dispatch({ type: "insightsTab", tab: "compare" });
     }
   };
 
@@ -89,9 +96,17 @@ export function Header() {
             key={m.id}
             className={m.signature ? "signature" : undefined}
             aria-current={mode === m.id}
+            aria-label={m.label}
             onClick={() => dispatch({ type: "mode", mode: m.id })}
           >
-            {m.label}
+            {m.short ? (
+              <>
+                <span className="nav-long">{m.label}</span>
+                <span className="nav-short" aria-hidden="true">{m.short}</span>
+              </>
+            ) : (
+              m.label
+            )}
           </button>
         ))}
       </nav>
@@ -142,16 +157,17 @@ export function Header() {
                 </button>
               ))}
               <p className="legend-note" style={{ padding: "4px 10px" }}>
-                Postcode geographies are reported without boundaries — see COMPARE for their results.
+                Postcode geographies are reported without boundaries — see INSIGHTS ·
+                Comparisons for their results.
               </p>
             </div>
           )}
         </div>
         <button
           className="icon-btn"
-          title="Data & methodology"
-          aria-label="Data and methodology"
-          onClick={() => dispatch({ type: "methodology", open: true })}
+          title="About, data & methodology"
+          aria-label="About, data and methodology"
+          onClick={() => dispatch({ type: "mode", mode: "about" })}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 16v-5M12 8h.01" />
@@ -160,9 +176,9 @@ export function Header() {
         </button>
         <button
           className="icon-btn"
-          title={`About ${APP_NAME}`}
-          aria-label="Help and about"
-          onClick={() => dispatch({ type: "info", open: true })}
+          title={`Take a quick tour of ${APP_NAME}`}
+          aria-label="Take a quick tour"
+          onClick={() => dispatch({ type: "tour", step: 0 })}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9.3 9a2.8 2.8 0 1 1 3.9 2.6c-.8.35-1.2 1-1.2 1.9v.3M12 17.5h.01" />

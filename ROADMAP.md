@@ -98,15 +98,51 @@ Built against the client's Stage 3 brief; every indicator from validated data on
   presence, NI vintage pinning, state transitions), lint, typecheck, build, headless
   QA of all six modes, pixel-verified chapter-6 emphasis — all green.
 
-## Stage 4 — Polish, verification & demo delivery (proposed)
+## Stage 4 — Executive experience, reporting, QA & deployment ✅ (delivered 5 Nov 2026)
 
-- Design polish pass (premium feel, motion, empty/loading states), accessibility audit
-  (WCAG AA, keyboard, colour-vision), performance pass, cross-device QA.
-- Independent fact-check of every on-screen number against `data/` and the source report;
-  copy review of all caveat language.
-- Report-export view (branded, attributed), README, demo script/walkthrough for the
-  client session; stakeholder feedback loop and backlog for post-demo work (MOVE NI,
-  postcode boundaries, future POMNI waves, decile mapping once methodology confirmed).
+Built against the client's Stage 4 brief (A–J):
+
+- **Overview landing + executive dashboard** (new default view): "Better Greenspace.
+  Better Places. Better Lives." hero over the live map backdrop, count-up headline
+  indicators (published survey values + live service figures, reduced-motion aware),
+  evidence-at-a-glance summary for decision-makers with links into every detailed view,
+  section entry cards, and a Create-report entry point.
+- **Eight-section navigation**: Overview · Explore · Standards · Accessibility ·
+  Insights · Perception vs Provision · Story · About — map state preserved across
+  sections (single mounted map); Compare lives on as the Insights "Comparisons" tab;
+  short nav labels at narrow widths.
+- **Accessibility explorer** (new mode): the published SDZ household-proximity surface on
+  the main map with 400 m / 1 km / 2 km switching, legend, NI reference figures, context
+  layers, plain-language help ("what is a Super Data Zone"), and the explicit
+  no-isochrone / no-circular-buffer statement.
+- **Opportunity explorer** (Insights tab): transparent council screening on published
+  indicators only (Access To index vs NI; 400 m provision vs the NI figure;
+  perception-lags-provision divergence) with every indicator value shown and no invented
+  composite score, plus the twelve lowest-coverage SDZs queried live (SDZ_Name/SDZ_Code
+  verified on the service) with zoom-to-SDZ map links. Framed throughout as starting
+  points, never approved priorities.
+- **PDF report generation**: branded A4-landscape evidence summary for the current
+  selection (council or NI) — KPIs, live map snapshot (view.takeScreenshot), quadrant
+  position with caveat, standards context, full attribution — via print-to-PDF with a
+  dedicated print stylesheet; unavailable items are omitted with a stated reason.
+- **About & Methodology section**: purpose, project context, sources, role of Outscape's
+  services, threshold meanings, perception≠provision, limitations, data currency,
+  attribution (no implied endorsement).
+- **UX**: first-visit guided tour (5 steps, localStorage-guarded, relaunchable from the
+  header and About), reset-view map control, tooltips, offline notes everywhere a live
+  query can fail, responsive pass (desktop/tablet/mobile; nav scroll + grid minmax fix
+  for a real 390 px overflow found in QA).
+- **Deployment prep**: README (stack, integrity rules, build/deploy instructions, no env
+  vars/keys needed, attribution incl. licence-year TBC) and DEMO_SCRIPT.md (12-minute
+  walkthrough with caveats and client questions).
+- Quality gate: 44 tests (8 new Stage-4 tests incl. opportunity screening against
+  live-verified values and degraded-mode behaviour), tsc, eslint, build, headless QA of
+  all eight sections at 1600/768/390 px — zero page errors.
+- Stage 4 fixes found in QA: insights tab bar unclickable under the overlay (z-index),
+  report meta lines concatenating, mobile horizontal overflow (grid minmax).
+
+Post-demo backlog (unchanged): MOVE NI, postcode boundaries decision, future POMNI
+waves, decile mapping once methodology confirmed, official brand assets once approved.
 
 ## Risks & dependencies
 
