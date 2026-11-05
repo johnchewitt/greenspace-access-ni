@@ -162,6 +162,13 @@ Built from client-supplied datasets and feedback:
   click-for-profile panels for both published and unpublished units, search-to-map,
   code labels, and "derived / indicative" labelling throughout (CLAUDE.md GIS rule
   updated accordingly). Join coverage 48/48 + 23/23 asserted by tests.
+  **Third iteration, same day** (client reported faint unpublished areas and supplied a
+  real district boundary FileGDB): districts now use the **supplied boundary dataset**
+  (81 districts incl. BT99, real shapes incl. the Lough Neagh hole); sectors are
+  re-derived **within** those districts (Voronoi clipped per district, so sectors nest
+  exactly); the "Not published (n < 30)" fill strengthened from 35% to 80% opacity so
+  every boundary reads clearly on the dark theme; all provenance copy now distinguishes
+  supplied districts from derived sectors.
 - **Named settlement context**: first delivered as unnamed OSNI 50k footprints
   (that source has no name attribute), then upgraded the same day when the client
   supplied the NI Planning **Settlement Development Limits** (statutory Area Plans,

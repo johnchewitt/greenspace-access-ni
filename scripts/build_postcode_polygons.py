@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
-"""Derive postcode district & sector polygons from licensed unit-postcode points.
+"""Build postcode district & sector boundaries for the app.
 
-Input (argv[1], not committed): the client-supplied, licence-cleared NSPL
-(Nov 2020) BT unit postcodes, geocoded to Irish Grid (EPSG:29902), in a File
-Geodatabase. The layer is POINTS — polygons are DERIVED here the way postcode
-boundary products are commonly built: a Voronoi tessellation of the precise
-unit-postcode locations, dissolved by district / sector, clipped to the NI
-council-boundary outline. The result is an *indicative* boundary set and is
-labelled as derived wherever shown.
+Inputs (argv, not committed):
+  1. Client-supplied postcode DISTRICT boundaries (FileGDB, layer
+     'PostcodeDistricts', field 'District', EPSG:29902) — real supplied
+     boundaries, used as-is (reprojected + lightly simplified).
+  2. Client-supplied, licence-cleared NSPL (Nov 2020) BT unit-postcode points
+     (shapefile, field 'USER_pcd', EPSG:29902) — used only to DERIVE sector
+     boundaries: a Voronoi tessellation of each district's precise unit-postcode
+     locations, clipped to that district's REAL boundary and dissolved by
+     sector. Sectors therefore nest exactly inside the supplied districts and
+     remain indicative; districts are as supplied.
 
 Outputs (app/public/data/):
-- pc_districts_joined.geojson — every derived district; published POMNI
-  results joined where they exist (pub=1), with the same field names the
-  council choropleth renderer uses.
-- pc_sectors_joined.geojson — same, for sectors.
-
-Join coverage over the published 48 districts + 23 sectors is asserted.
+  pc_districts_joined.geojson / pc_sectors_joined.geojson — published POMNI
+  results joined where they exist (pub=1); EVERY feature carries every value
+  field (null when unpublished) because GeoJSONLayer infers its schema from
+  leading features. Published coverage 48/48 + 23/23 is asserted.
 """
 import json
 import re
@@ -27,19 +28,24 @@ import pyogrio
 import shapely
 from pyproj import Transformer
 from scipy.spatial import Voronoi
-from shapely.geometry import MultiPolygon, Polygon, box
+from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
 
 ROOT = Path(__file__).resolve().parent.parent
-UNIT_RE = re.compile(r"^(BT\d+)\s+?(\d)([A-Z]{2})$")
-SIMPLIFY_M = 40
+UNIT_RE = re.compile(r"^(BT\d+) (\d)[A-Z]{2}$")
+SIMPLIFY_M = 20
+
+tr_out = Transformer.from_crs(29902, 4326, always_xy=True)
 
 
-def finite_voronoi_cells(vor: Voronoi, bound: Polygon) -> list[Polygon | None]:
-    """Finite polygon per input point, clipped to `bound` (standard recipe)."""
+def to_wgs(geom):
+    return shapely.transform(geom, lambda a: np.column_stack(tr_out.transform(a[:, 0], a[:, 1])))
+
+
+def finite_voronoi_cells(vor: Voronoi) -> list[Polygon | None]:
+    """Finite polygon per input point (standard unbounded-cell closure)."""
     center = vor.points.mean(axis=0)
     radius = 1e6
-    # map point -> ridges
     all_ridges: dict[int, list] = {}
     for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
         all_ridges.setdefault(p1, []).append((p2, v1, v2))
@@ -50,10 +56,9 @@ def finite_voronoi_cells(vor: Voronoi, bound: Polygon) -> list[Polygon | None]:
         if -1 not in vertices:
             poly = Polygon(vor.vertices[vertices])
         else:
-            ridges = all_ridges.get(p1, [])
             new_region = [v for v in vertices if v >= 0]
             pts = [vor.vertices[v] for v in new_region]
-            for p2, v1, v2 in ridges:
+            for p2, v1, v2 in all_ridges.get(p1, []):
                 if v2 < 0:
                     v1, v2 = v2, v1
                 if v1 >= 0:
@@ -76,118 +81,110 @@ def finite_voronoi_cells(vor: Voronoi, bound: Polygon) -> list[Polygon | None]:
     return cells
 
 
-def main() -> None:
-    src = Path(sys.argv[1])
-    meta, _, geoms, fields = pyogrio.raw.read(
-        src, columns=["USER_pcd", "Status", "ShortLabel"], force_2d=True
-    )
-    idx = {n: i for i, n in enumerate(meta["fields"])}
-    pcd_a, status_a, short_a = (
-        fields[idx["USER_pcd"]],
-        fields[idx["Status"]],
-        fields[idx["ShortLabel"]],
-    )
-    pts_geom = shapely.from_wkb(geoms)
+NULL_PROPS = {
+    "name": None, "n": None, "total_pct": None, "total_index": None,
+    "idx_at": None, "idx_aw": None, "idx_q": None, "idx_b": None,
+}
 
-    by_xy: dict[tuple[float, float], tuple[str, str]] = {}
-    for g, pcd, status, short in zip(pts_geom, pcd_a, status_a, short_a):
-        if g is None or status != "M":
+
+def feature(code: str, geom, row: dict | None) -> dict:
+    props = {"code": code, "pub": 1 if row else 0, **NULL_PROPS}
+    if row:
+        t = row["themes_index"]
+        props.update(
+            name=row["place"], n=row["sample_n"],
+            total_pct=row["total_pct"], total_index=row["total_index"],
+            idx_at=t["access_to"], idx_aw=t["access_within"],
+            idx_q=t["quality"], idx_b=t["benefits"],
+        )
+    gj = json.loads(json.dumps(to_wgs(geom).__geo_interface__), parse_float=lambda v: round(float(v), 5))
+    return {"type": "Feature", "properties": props, "geometry": gj}
+
+
+def main() -> None:
+    gdb, shp = Path(sys.argv[1]), Path(sys.argv[2])
+
+    # ——— real district boundaries ———
+    meta, _, geoms, fields = pyogrio.raw.read(gdb, columns=["District"], force_2d=True)
+    district_geom: dict[str, MultiPolygon] = {}
+    for wkb, code in zip(geoms, fields[0]):
+        g = shapely.from_wkb(wkb).buffer(0)
+        district_geom[str(code).strip()] = g
+
+    # ——— unit points, grouped by district/sector ———
+    m2, _, pgeoms, pfields = pyogrio.raw.read(shp, columns=["USER_pcd", "Status", "ShortLabel"], force_2d=True)
+    pidx = {n: i for i, n in enumerate(m2["fields"])}
+    pts_by_district: dict[str, list] = {}
+    for wkb, pcd, status, short in zip(
+        pgeoms, pfields[pidx["USER_pcd"]], pfields[pidx["Status"]], pfields[pidx["ShortLabel"]]
+    ):
+        if status != "M":
             continue
-        # NSPL pcd is 7 chars with the inward code as the last 3 ("BT1  1AA",
-        # "BT111AA"); outward = the rest, stripped.
         raw = str(pcd or "").strip()
         if len(raw) < 5:
             continue
         inward, outward = raw[-3:], raw[:-3].strip()
         if not re.match(r"^BT\d+$", outward) or not re.match(r"^\d[A-Z]{2}$", inward):
             continue
-        # require the geocode itself to be a precise unit-level match
         if not UNIT_RE.match(str(short or "").strip()):
-            continue
-        key = (round(g.x, 1), round(g.y, 1))
-        if key not in by_xy:
-            by_xy[key] = (outward, f"{outward} {inward[0]}")
-
-    coords = np.array(list(by_xy.keys()))
-    codes = list(by_xy.values())
-    print(f"unit points for tessellation: {len(coords)}")
-
-    # NI outline from the bundled council boundaries (WGS84 -> Irish Grid)
-    lgd = json.loads((ROOT / "app/public/data/ni_lgd_joined.geojson").read_text())
-    tr_in = Transformer.from_crs(4326, 29902, always_xy=True)
-    polys = []
-    for f in lgd["features"]:
-        geom = shapely.geometry.shape(f["geometry"])
-        polys.append(shapely.transform(geom, lambda a: np.column_stack(tr_in.transform(a[:, 0], a[:, 1]))))
-    outline = unary_union(polys).buffer(100).buffer(0)
-
-    vor = Voronoi(coords)
-    bound = box(*outline.bounds).buffer(5000)
-    cells = finite_voronoi_cells(vor, bound)
-
-    by_district: dict[str, list] = {}
-    by_sector: dict[str, list] = {}
-    for cell, (district, sector) in zip(cells, codes):
-        if cell is None:
-            continue
-        by_district.setdefault(district, []).append(cell)
-        by_sector.setdefault(sector, []).append(cell)
+            continue  # precise unit-level geocodes only
+        g = shapely.from_wkb(wkb)
+        pts_by_district.setdefault(outward, []).append((g.x, g.y, f"{outward} {inward[0]}"))
 
     districts_pub = {r["postcode_area"]: r for r in json.loads((ROOT / "data/postcode_area_results.json").read_text())}
     sectors_pub = {r["postcode_sector"]: r for r in json.loads((ROOT / "data/postcode_sector_results.json").read_text())}
 
-    tr_out = Transformer.from_crs(29902, 4326, always_xy=True)
+    d_feats, s_feats = [], []
+    d_cov, s_cov = set(), set()
+    for code in sorted(district_geom):
+        dgeom = district_geom[code].simplify(SIMPLIFY_M, preserve_topology=True).buffer(0)
+        row = districts_pub.get(code)
+        if row:
+            d_cov.add(code)
+        d_feats.append(feature(code, dgeom, row))
 
-    def dissolve(groups: dict[str, list], pub: dict[str, dict], code_key: str) -> dict:
-        feats = []
-        covered = set()
-        for code, cell_list in sorted(groups.items()):
-            geom = unary_union(cell_list).intersection(outline)
-            geom = geom.simplify(SIMPLIFY_M, preserve_topology=True).buffer(0)
-            if geom.is_empty:
+        # sectors: Voronoi of this district's unit points, clipped to the REAL
+        # district boundary, dissolved by sector
+        pts = pts_by_district.get(code, [])
+        seen: dict[tuple, str] = {}
+        for x, y, sector in pts:
+            seen.setdefault((round(x, 1), round(y, 1)), sector)
+        coords = np.array(list(seen.keys()))
+        sectors_here = sorted({s for s in seen.values()})
+        by_sector: dict[str, list] = {}
+        if len(coords) >= 4 and len(sectors_here) > 1:
+            vor = Voronoi(coords)
+            cells = finite_voronoi_cells(vor)
+            for cell, sector in zip(cells, seen.values()):
+                if cell is not None:
+                    by_sector.setdefault(sector, []).append(cell)
+        elif sectors_here:
+            # a district with a single sector (or too few points): the sector
+            # IS the district
+            by_sector[sectors_here[0]] = [district_geom[code]]
+        for sector, cell_list in sorted(by_sector.items()):
+            sgeom = unary_union(cell_list).intersection(district_geom[code])
+            sgeom = sgeom.simplify(SIMPLIFY_M, preserve_topology=True).buffer(0)
+            if sgeom.is_empty:
                 continue
-            if isinstance(geom, Polygon):
-                geom = MultiPolygon([geom])
-            # drop slivers under 2 ha so coastline clips stay clean
-            parts = [p for p in geom.geoms if p.area > 20000] or list(geom.geoms)
-            geom = MultiPolygon(parts)
-            wgs = shapely.transform(geom, lambda a: np.column_stack(tr_out.transform(a[:, 0], a[:, 1])))
-            gj = json.loads(json.dumps(wgs.__geo_interface__), parse_float=lambda v: round(float(v), 5))
-            row = pub.get(code)
-            # every field present on every feature (null when unpublished):
-            # GeoJSONLayer infers its schema from leading features, so a file
-            # whose first features lack a field would lose it for ALL features
-            props: dict = {
-                "code": code, "pub": 1 if row else 0, "name": None, "n": None,
-                "total_pct": None, "total_index": None,
-                "idx_at": None, "idx_aw": None, "idx_q": None, "idx_b": None,
-            }
-            if row:
-                covered.add(code)
-                t = row["themes_index"]
-                props.update(
-                    name=row["place"], n=row["sample_n"],
-                    total_pct=row["total_pct"], total_index=row["total_index"],
-                    idx_at=t["access_to"], idx_aw=t["access_within"],
-                    idx_q=t["quality"], idx_b=t["benefits"],
-                )
-            feats.append({"type": "Feature", "properties": props, "geometry": gj})
-        missing = set(pub) - covered
-        if missing:
-            sys.exit(f"FATAL: published {code_key} without polygons: {sorted(missing)}")
-        return {"type": "FeatureCollection", "features": feats}
+            srow = sectors_pub.get(sector)
+            if srow:
+                s_cov.add(sector)
+            s_feats.append(feature(sector, sgeom, srow))
 
-    d_fc = dissolve(by_district, districts_pub, "districts")
-    s_fc = dissolve(by_sector, sectors_pub, "sectors")
+    d_missing = set(districts_pub) - d_cov
+    s_missing = set(sectors_pub) - s_cov
+    if d_missing or s_missing:
+        sys.exit(f"FATAL: published units without boundaries: {sorted(d_missing | s_missing)}")
+
     dd = ROOT / "app/public/data/pc_districts_joined.geojson"
     sd = ROOT / "app/public/data/pc_sectors_joined.geojson"
-    dd.write_text(json.dumps(d_fc, separators=(",", ":")))
-    sd.write_text(json.dumps(s_fc, separators=(",", ":")))
+    dd.write_text(json.dumps({"type": "FeatureCollection", "features": d_feats}, separators=(",", ":")))
+    sd.write_text(json.dumps({"type": "FeatureCollection", "features": s_feats}, separators=(",", ":")))
     print(
-        f"OK: {len(d_fc['features'])} districts ({dd.stat().st_size//1024} KiB), "
-        f"{len(s_fc['features'])} sectors ({sd.stat().st_size//1024} KiB); "
-        f"published joins: {sum(f['properties']['pub'] for f in d_fc['features'])}/48 districts, "
-        f"{sum(f['properties']['pub'] for f in s_fc['features'])}/23 sectors"
+        f"OK: {len(d_feats)} districts ({dd.stat().st_size//1024} KiB, real boundaries), "
+        f"{len(s_feats)} sectors ({sd.stat().st_size//1024} KiB, derived within districts); "
+        f"published joins {len(d_cov)}/48 districts, {len(s_cov)}/23 sectors"
     )
 
 

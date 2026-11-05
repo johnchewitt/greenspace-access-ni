@@ -30,11 +30,12 @@ Click **Explore the map →**.
 - Switch theme **Overall → Access To**: the map's weak spot appears in the west.
 - Toggle **% of maximum ↔ Index (NI = 100)** — both are published formats.
 - Click **Belfast**: the profile panel shows 79.7%, index 103.4, and its theme chart.
-- **Geography switch — the new headline**: flip **Councils → Districts**: all 80 BT
+- **Geography switch — the new headline**: flip **Councils → Districts**: all 81 BT
   districts appear as a true choropleth (48 with published results, the rest honestly
   "not published, n < 30"). Click one for its profile; try **Sectors** too, or search
-  "BT4 2". Say: "the boundaries are derived from our licence-cleared unit-postcode
-  dataset — Voronoi, dissolved, clipped — and labelled indicative throughout."
+  "BT4 2". Say: "district boundaries are our supplied boundary dataset; sector
+  boundaries are derived within them from the licence-cleared unit postcodes — and
+  labelled as such throughout."
 - Flick a Greenspace NI Map layer on (sites/trails) — "this is the estate you already
   publish, consumed live, with status chips when a service is down." Toggle
   **Settlement limits (named)**: the statutory Area Plan development limits, with town
@@ -82,9 +83,9 @@ Click **PERCEPTION VS PROVISION** (Belfast still selected).
 
 1. Licence year for the NIMA attribution — 2024 or 2026? (A "TBC" marker is held in the docs.)
 2. Preferred provision vintage — the app pins the latest (2026) and labels it; happy?
-3. Postcode boundaries — resolved: derived (indicative) boundaries now ship, built from
-   the licence-cleared unit-postcode dataset. Confirm Outscape is happy with the
-   "derived / indicative" labelling, and the exact attribution wording for that dataset.
+3. Postcode boundaries — resolved: the supplied district boundary dataset ships as-is,
+   with sector boundaries derived within it from the licence-cleared unit postcodes.
+   Confirm the attribution wording for both datasets.
 4. The SDZ-level 2 km indicator is absent from the 2026 analysis (0 of 849 rows) — is
    that intentional, and will it return in the next vintage?
 5. Official brand assets: the app uses its own design language pending approved assets.

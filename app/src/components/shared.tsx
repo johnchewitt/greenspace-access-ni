@@ -74,7 +74,7 @@ export function MapLegend({
 }) {
   const { layers } = useAppState();
   const entries = showUnpublished
-    ? [...legendEntries(metric, format), { color: "rgba(81, 98, 93, 0.35)", label: "Not published (n < 30)" }]
+    ? [...legendEntries(metric, format), { color: "rgba(58, 74, 70, 0.8)", label: "Not published (n < 30)" }]
     : legendEntries(metric, format);
   const isIndex = metric !== "total" || format === "index";
   const activeContext = CONTEXT_SWATCHES.filter((c) => layers[c.id]);

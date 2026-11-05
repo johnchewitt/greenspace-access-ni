@@ -431,10 +431,10 @@ export class MapController {
     this.sdzLayer.definitionExpression = sdzDefinitionFor(field);
   }
 
-  // ——— Postcode geographies: true district/sector choropleths. Boundaries
-  // are DERIVED (Voronoi of ~43k licence-cleared NSPL unit-postcode
-  // locations, dissolved and clipped to the council outline) and labelled as
-  // indicative wherever shown; built by scripts/build_postcode_polygons.py.
+  // ——— Postcode geographies: true district/sector choropleths. District
+  // boundaries are client-supplied; sector boundaries are DERIVED within
+  // them (Voronoi of licence-cleared NSPL unit-postcode locations, clipped
+  // per district) and labelled indicative; scripts/build_postcode_polygons.py.
   pcLayers: { districts: GeoJSONLayer | null; sectors: GeoJSONLayer | null } = {
     districts: null,
     sectors: null,
@@ -458,8 +458,11 @@ export class MapController {
     if (!this.pcLayers[kind]) {
       const layer = new GeoJSONLayer({
         url: `${import.meta.env.BASE_URL}${kind === "districts" ? localData.pcDistricts : localData.pcSectors}`,
-        title: kind === "districts" ? "Postcode districts (derived)" : "Postcode sectors (derived)",
-        copyright: "Boundaries derived from licensed unit-postcode locations (indicative)",
+        title: kind === "districts" ? "Postcode districts" : "Postcode sectors (derived)",
+        copyright:
+          kind === "districts"
+            ? "Postcode district boundaries: client-supplied dataset"
+            : "Sector boundaries derived within supplied districts from licensed unit-postcode locations (indicative)",
         outFields: ["*"], // hitTest strips attributes without this
         popupEnabled: false,
         visible: false,

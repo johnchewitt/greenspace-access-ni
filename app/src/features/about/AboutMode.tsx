@@ -53,13 +53,13 @@ export function AboutMode() {
             <li>
               <b>Boundaries &amp; reference geography:</b> council boundaries derived from OSNI Open
               Data; settlement development limits from the published statutory Area Plans
-              (NI Planning open data). No official open-licence postcode
-              polygons exist for Northern Ireland; postcode boundaries shown here are{" "}
-              <b>derived</b> — a Voronoi tessellation of ~43,000 licence-cleared NSPL unit
-              postcode locations (Nov 2020), dissolved to districts and sectors and
-              clipped to the council outline — and are indicative rather than official.
-              The derivation method is stated here precisely so the distinction stays
-              visible.
+              (NI Planning open data). Postcode <b>district</b> boundaries
+              are a client-supplied boundary dataset; postcode <b>sector</b> boundaries
+              are <b>derived</b> within those districts — a Voronoi tessellation of
+              ~43,000 licence-cleared NSPL unit-postcode locations (Nov 2020), clipped
+              per district and dissolved by sector — and are indicative rather than
+              official. The derivation method is stated here precisely so the
+              distinction stays visible.
             </li>
           </ul>
           <h3>What the walking thresholds mean</h3>

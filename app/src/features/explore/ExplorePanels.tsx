@@ -31,8 +31,8 @@ const LAYERS: { id: LayerId; label: string }[] = [
 
 const GEOGRAPHIES: { id: Geography; label: string; hint: string }[] = [
   { id: "councils", label: "Councils", hint: "11 council areas (boundaries)" },
-  { id: "districts", label: "Districts", hint: "BT postcode districts (derived boundaries)" },
-  { id: "sectors", label: "Sectors", hint: "BT postcode sectors (derived boundaries)" },
+  { id: "districts", label: "Districts", hint: "BT postcode districts (supplied boundaries)" },
+  { id: "sectors", label: "Sectors", hint: "BT postcode sectors (derived within districts)" },
 ];
 
 export function LeftPanel() {
@@ -69,7 +69,9 @@ export function LeftPanel() {
           <p className="format-hint">
             {geography === "councils"
               ? "11 councils as boundaries."
-              : `${geography === "districts" ? "80 postcode districts (48 with published results)" : "Postcode sectors (23 with published results)"} — boundaries derived from licence-cleared unit-postcode locations; indicative, not official.`}
+              : geography === "districts"
+                ? "81 postcode districts (48 with published results) — supplied boundary dataset."
+                : "Postcode sectors (23 with published results) — boundaries derived within the supplied districts from licence-cleared unit-postcode locations; indicative."}
           </p>
         </section>
         <section className="panel-section glass">
@@ -211,8 +213,8 @@ function PostcodePanel({ code }: { code: string }) {
           <h3 className="area-name">{code}</h3>
           <p className="format-hint" style={{ marginTop: 8 }}>
             No published result for this area: the interim report publishes postcode
-            results only where the sample reaches n ≥ 30. Its boundary is shown (derived,
-            indicative) so the geography stays complete.
+            results only where the sample reaches n ≥ 30. Its boundary is shown so the
+            geography stays complete.
           </p>
           <button
             className="kpi-card"
@@ -261,10 +263,11 @@ function PostcodePanel({ code }: { code: string }) {
         </table>
         <UncertaintyNote />
         <p className="format-hint" style={{ marginTop: 8 }}>
-          Boundary derived from licence-cleared unit-postcode locations (Voronoi of the
-          area's unit postcodes) — indicative, not an official boundary. Scores shown in
-          bands; small differences between areas are not meaningful at these sample
-          sizes.
+          {code.includes(" ")
+            ? "Sector boundary derived within the supplied district boundaries from licence-cleared unit-postcode locations — indicative."
+            : "District boundary from the supplied boundary dataset."}{" "}
+          Scores shown in bands; small differences between areas are not meaningful at
+          these sample sizes.
         </p>
         <button
           className="kpi-card"

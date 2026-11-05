@@ -42,8 +42,9 @@ export function buildRenderer(metric: MetricId, format: FormatId): ClassBreaksRe
       symbol: fill(color),
       label: labels[i],
     })),
-    // units without a published value (postcode geographies, n < 30)
-    defaultSymbol: fill("rgba(81, 98, 93, 0.35)"),
+    // units without a published value (postcode geographies, n < 30) —
+    // solid enough to read as part of the map on the dark theme
+    defaultSymbol: fill("rgba(58, 74, 70, 0.8)"),
     defaultLabel: "Not published (n < 30)",
   });
 }
